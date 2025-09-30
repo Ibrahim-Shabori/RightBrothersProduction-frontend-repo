@@ -1,0 +1,33 @@
+<div class="font-fustat h-screen">
+  <div
+    class="mx-auto mt-24 mb-24 w-full max-w-md rounded-xl bg-white shadow-lg p-8"
+  >
+    <div
+      class="flex items-center min-w-96 w-full space-x-rtl-1 justify-between text-xl mb-6 p-2 rounded-lg"
+    >
+      <a
+        class="flex w-1/2 bg-slate-300 items-center cursor-pointer duration-200 justify-center text-center text-blackBlue p-5 rounded-lg"
+        [class.bg-opacity-5]="(mode$ | async) === 'login'"
+        [routerLink]="['login']"
+      >
+        دخول
+      </a>
+      <a
+        class="flex bg-slate-300 w-1/2 items-center cursor-pointer duration-200 justify-center text-center text-blackBlue p-5 rounded-lg"
+        [class.bg-opacity-5]="(mode$ | async) === 'signup'"
+        [routerLink]="['signup']"
+      >
+        إنشاء حساب
+      </a>
+    </div>
+    <div>
+      @if (mode$ | async; as mode) {
+      <h2 class="text-3xl mb-6">
+        {{ mode === "login" ? "أهلاً بعودتك" : "أنشئ حسابا جديداً" }}
+      </h2>
+      }
+
+      <router-outlet />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="flex flex-col justify-center items-center space-y-6 font-fustat"
+>
+  @if (errorMessage) {
+  <p class="text-red-500 text-sm mb-4">{{ errorMessage }}</p>
+  }
+  <div class="relative w-96">
+    <input
+      formControlName="email"
+      type="email"
+      id="email"
+      placeholder=" "
+      class="peer block w-full rounded-md border border-gray-300 px-3 pt-8 pb-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+    />
+    <label
+      for="email"
+      class="absolute right-3 top-2 text-gray-800 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm"
+    >
+      البريد الإلكتروني
+    </label>
+    @if (form.get('email')?.invalid && form.get('email')?.touched){
+    <p class="text-red-500 text-sm mt-1">البريد الإلكتروني غير صالح</p>
+    }
+  </div>
+  <div class="relative mt-4 w-96">
+    <input
+      formControlName="password"
+      type="password"
+      id="password"
+      placeholder=" "
+      class="peer block w-full rounded-md border border-gray-300 px-3 pt-8 pb-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+    />
+    <label
+      for="password"
+      class="absolute right-3 top-2 text-gray-800 text-sm transition-all peer-placeholder-shown:top-5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-gray-600 peer-focus:text-sm"
+    >
+      كلمة المرور
+    </label>
+    @if (form.get('password')?.invalid && form.get('password')?.touched){
+    <p class="text-red-500 text-sm mt-1">كلمةالمرور غير صالحة</p>
+    }
+  </div>
+  <div class="flex items-center space-x-rtl-3 w-96">
+    <button
+      type="submit"
+      class="bg-blue-500 text-white p-2 rounded text-lg hover:bg-blue-600 duration-200 w-1/2"
+    >
+      دخول
+    </button>
+    <!-- add login with google -->
+    <button
+      (click)="onGoogleClick()"
+      type="button"
+      class="flex items-center gap-3 px-4 py-2 w-1/2 bg-white border rounded shadow hover:bg-gray-50"
+    >
+      <i class="fa-brands fa-google text-red-500 text-lg"></i>
+      <span class="text-gray-800 font-medium text-lg">دخول عبر جوجل</span>
+    </button>
+  </div>
+</form>
