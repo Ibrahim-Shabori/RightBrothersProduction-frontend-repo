@@ -4,6 +4,7 @@ import { AuthComponent } from './auth/auth.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { AuthGuard } from './guards/auth.guard';
+import { RequestsLandingPageComponent } from './requests-landing-page/requests-landing-page.component';
 
 export const routes: Routes = [
   {
@@ -13,6 +14,10 @@ export const routes: Routes = [
   {
     path: 'download',
     component: DownloadLandingPageComponent,
+  },
+  {
+    path: 'requests',
+    component: RequestsLandingPageComponent,
   },
   {
     path: 'auth',
