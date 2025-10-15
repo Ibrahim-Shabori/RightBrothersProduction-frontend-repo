@@ -5,6 +5,9 @@ import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RequestsLandingPageComponent } from './requests-landing-page/requests-landing-page.component';
+import { RequestsSuggestionsLandingPageComponent } from './requests-suggestions-landing-page/requests-suggestions-landing-page.component';
+import { FeaturesComponent } from './requests-suggestions-landing-page/features/features.component';
+import { BugsComponent } from './requests-suggestions-landing-page/bugs/bugs.component';
 
 export const routes: Routes = [
   {
@@ -18,6 +21,27 @@ export const routes: Routes = [
   {
     path: 'requests',
     component: RequestsLandingPageComponent,
+  },
+  {
+    path: 'requests-suggestions',
+    component: RequestsSuggestionsLandingPageComponent,
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'features',
+      },
+      {
+        path: 'features',
+        component: FeaturesComponent,
+        data: { type: 'features' },
+      },
+      {
+        path: 'bugs',
+        component: BugsComponent,
+        data: { type: 'bugs' },
+      },
+    ],
   },
   {
     path: 'auth',

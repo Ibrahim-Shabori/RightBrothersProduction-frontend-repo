@@ -1,40 +1,36 @@
-<div
-  class="flex items-center justify-between h-20 bg-gray-50 shadow-sm shadow-gray-400 font-fustat px-6"
->
+<div class="container flex justify-center items-center mx-auto">
   <div
-    class="flex items-center space-x-rtl-4 justify-center cursor-pointer"
-    routerLink="/"
+    class="flex items-center justify-between w-full h-20 bg-gray-50 border-b border-black shadow-gray-400 font-fustat px-6"
   >
-    <img src="/icon.png" alt="RightBrothers Icon" class="w-16" />
-  </div>
-  <div></div>
-  <div class="flex items-center space-x-rtl-4 justify-center text-xl">
-    @if ((role) === 'Admin') {
-    <button
-      class="rounded-xl duration-200 hover:opacity-80 border-cyanBlue border p-2 bg-cyanBlue text-white"
+    <div
+      class="flex items-center space-x-rtl-4 justify-center cursor-pointer"
+      routerLink="/"
     >
-      لوحة التحكم
-    </button>
-    } @if (isLoggedIn$ | async) {
-    <button
-      class="rounded-xl hover:opacity-80 duration-200 p-2 border border-red-600 bg-red-500 text-white"
-      (click)="logout()"
-    >
-      تسجيل الخروج
-    </button>
-    } @else {
-    <button
-      class="rounded-xl duration-200 hover:opacity-80 border-cyanBlue border p-2 bg-cyanBlue text-white"
-      [routerLink]="['auth/login']"
-    >
-      دخول
-    </button>
-    <button
-      class="rounded-xl hover:opacity-80 duration-200 p-2 border border-brownBlue bg-brownBlue text-white"
-      [routerLink]="['auth/signup']"
-    >
-      إنشاء حساب
-    </button>
-    }
+      <img src="/icon.png" alt="RightBrothers Icon" class="w-16" />
+    </div>
+    <div></div>
+    <div class="flex items-center space-x-rtl-4 justify-center text-xl">
+      @if ((role) === 'Admin') {
+      <app-button bgColor="bg-cyanBlue" borderColor="border-cyanBlue">
+        لوحة التحكم
+      </app-button>
+      } @if (isLoggedIn$ | async) {
+      <app-button
+        bgColor="bg-red-500"
+        borderColor="border-red-600"
+        (click)="logout()"
+      >
+        تسجيل الخروج
+      </app-button>
+      } @else {
+      <app-button
+        borderColor="border-cyanBlue"
+        bgColor="bg-cyanBlue"
+        [routerLink]="['auth/login']"
+        >دخول</app-button
+      >
+      <app-button [routerLink]="['auth/signup']"> إنشاء حساب </app-button>
+      }
+    </div>
   </div>
 </div>

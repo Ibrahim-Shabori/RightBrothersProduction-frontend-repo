@@ -1,75 +1,125 @@
 <div
-  class="w-fit mx-auto mt-28 mb-12 xl:mt-56 font-fustat flex flex-col space-y-5 items-center"
+  class="container mx-auto w-fit mt-24 mb-12 xl:mt-28 font-fustat flex flex-col space-y-5 items-center"
 >
-  <div class="flex justify-between items-center w-full px-10">
-    <h2 class="text-3xl font-bold">خارطة التنفيذ</h2>
-    <button
-      class="rounded-xl hover:opacity-80 duration-200 text-xl p-2 border border-brownBlue bg-brownBlue text-white"
-    >
-      فلترة
-      <i class="fa-solid fa-filter"></i>
-    </button>
+  <div class="w-full p-10 flex flex-col space-y-4">
+    <div>
+      <h2 class="text-3xl font-bold">لوحة المقترحات</h2>
+    </div>
+    <div class="flex justify-between xl:justify-normal xl:space-x-rtl-3">
+      <app-button
+        bgColor="bg-white hover:bg-slate-200"
+        borderColor="border-black"
+        textColor="text-black"
+        [routerLink]="['../requests-suggestions/features']"
+        >اقتراحات الإضافة</app-button
+      >
+      <app-button
+        bgColor="bg-white hover:bg-slate-200"
+        borderColor="border-black"
+        textColor="text-black"
+        [routerLink]="['../requests-suggestions/bugs']"
+        >الأخطاء المبلغة</app-button
+      >
+    </div>
   </div>
 
-  <div
-    class="p-10 text-center flex-col xl:flex-row items-center flex justify-center xl:items-start space-y-6 xl:space-y-0 xl:space-x-rtl-6"
-  >
-    <app-request-card
-      title="قيد المراجعة"
-      colorClass="bg-blue-800 border-blue-800"
-    >
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-    </app-request-card>
+  <div class="flex flex-col w-full spacy-y-1 justify-center items-center">
+    <div class="relative flex justify-between items-center w-full px-10">
+      <h2 class="text-3xl font-bold">خارطة التنفيذ</h2>
+      <div class="relative dropdown-container">
+        <app-button (click)="toggleDropdown()">
+          فلترة
+          <i class="fa-solid fa-filter"></i>
+        </app-button>
+        @if (isOpen){
+        <div
+          class="absolute top-full left-0 p-2 mt-2 w-48 rounded-lg shadow-lg bg-white border border-gray-200 z-10"
+        >
+          <div class="flex space-x-rtl-1 p-1">
+            <input type="checkbox" id="all" name="all" checked />
+            <label for="all">الكل</label>
+          </div>
+          <div class="flex space-x-rtl-1 p-1">
+            <input type="checkbox" id="suggestion" name="suggestion" />
+            <label for="suggestion">اقتراح إضافة</label>
+          </div>
+          <div class="flex space-x-rtl-1 p-1">
+            <input type="checkbox" id="bug" name="bug" />
+            <label for="bug">خطأ مبلّغ</label>
+          </div>
+          <div class="flex space-x-rtl-1 p-1">
+            <input type="checkbox" id="question" name="question" />
+            <label for="question">سؤال</label>
+          </div>
+          <div class="flex space-x-rtl-1 p-1">
+            <input type="checkbox" id="other" name="other" />
+            <label for="other">أخرى</label>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
 
-    <app-request-card
-      title="قيد العمل"
-      colorClass="bg-yellow-500 border-yellow-500"
+    <div
+      class="p-10 text-center flex-col xl:flex-row items-center flex justify-center xl:items-start space-y-6 xl:space-y-0 xl:space-x-rtl-6"
     >
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-    </app-request-card>
+      <app-request-card
+        title="قيد المراجعة"
+        colorClass="bg-blue-800 border-blue-800"
+      >
+        <app-request-item
+          votesCount="341"
+          requestTitle="السة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح ة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+      </app-request-card>
 
-    <app-request-card
-      title="تم التنفيذ"
-      colorClass="bg-green-800 border-green-800"
-    >
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-      <app-request-item
-        votesCount="341"
-        requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-        requestType="اقتراح إضافة"
-      ></app-request-item>
-    </app-request-card>
+      <app-request-card
+        title="قيد العمل"
+        colorClass="bg-yellow-500 border-yellow-500"
+      >
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+      </app-request-card>
+
+      <app-request-card
+        title="تم التنفيذ"
+        colorClass="bg-green-800 border-green-800"
+      >
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+        <app-request-item
+          votesCount="341"
+          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
+          requestType="اقتراح إضافة"
+        ></app-request-item>
+      </app-request-card>
+    </div>
   </div>
 </div>

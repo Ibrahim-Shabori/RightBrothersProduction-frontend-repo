@@ -1,0 +1,24 @@
+<div
+  class="container w-full flex justify-center space-x-rtl-3 mt-24 font-fustat mx-auto"
+>
+  <div class="flex flex-col space-y-2">
+    <h3 class="p-2 text-slate-900 font-bold">لوحة المقترحات</h3>
+    <h5
+      class="p-2 cursor-pointer rounded-md text-slate-600 duration-200 hover:text-slate-950 hover:bg-slate-300"
+      [class.text-slate-950]="(type$ | async) === 'features'"
+      [class.bg-slate-300]="(type$ | async) === 'features'"
+      [routerLink]="['features']"
+    >
+      اقتراحات الإضافة
+    </h5>
+    <h5
+      class="p-2 cursor-pointer rounded-md text-slate-600 duration-200 hover:text-slate-950 hover:bg-slate-300"
+      [class.text-slate-950]="(type$ | async) === 'bugs'"
+      [class.bg-slate-300]="(type$ | async) === 'bugs'"
+      [routerLink]="['bugs']"
+    >
+      الأخطاء المبلغة
+    </h5>
+  </div>
+  <router-outlet></router-outlet>
+</div>

@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { ButtonComponent } from '../shared/button/button.component';
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, AsyncPipe],
+  imports: [RouterLink, AsyncPipe, ButtonComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
@@ -21,5 +22,8 @@ export class HeaderComponent {
   logout() {
     this.auth.logout();
     this.router.navigate(['/auth/login']);
+  }
+  test() {
+    console.log('clicked');
   }
 }
