@@ -6,29 +6,104 @@
       البحث عن اقتراحك!
     </p>
   </div>
-  <div class="border rounded-md p-3">
-    <form>
-      <div class="flex flex-col space-y-2">
+  <div class="border rounded-md">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="flex flex-col space-y-2 p-3">
+        @if(form.get('title')?.invalid && submitted()){
+        <div class="text-red-500 text-sm">
+          العنوان مطلوب ولا يتجاوز 40 حرفاً.
+        </div>
+        } @if(form.get('description')?.invalid && submitted()){
+        <div class="text-red-500 text-sm">
+          التفاصيل مطلوبة ولا تتجاوز 300 حرف.
+        </div>
+        } @if(form.get('category')?.invalid && submitted()){
+        <div class="text-red-500 text-sm">الفئة مطلوبة.</div>
+        } @if (form.get('files')?.hasError('maxFileSize')) {
+        <div class="text-red-500 text-sm">
+          أحد الملفات يتجاوز الحد المسموح به وهو 5MB.
+        </div>
+        } @if (form.get('files')?.hasError('maxTotalFileSize')) {
+        <div class="text-red-500 text-sm">
+          مجموع أحجام الملفات يتجاوز الحد المسموح به وهو 20MB.
+        </div>
+        } @if (form.get('files')?.hasError('invalidFileType')) {
+        <div class="text-red-500 text-sm">
+          أحد الملفات له نوع غير مدعوم. الأنواع المدعومة: PNG, JPEG.
+        </div>
+        }
+        <!-- title, description, category, files -->
+        <label for="title">العنوان</label>
         <textarea
+          formControlName="title"
+          maxlength="40"
           appAutoResize
           name="title"
           placeholder="ضع هنا عنواناً مختصراً قصيراً..."
           class="resize-none p-3 rounded-lg outline-none placeholder:text-black bg-transparent"
         ></textarea>
+        <label for="title">التفاصيل</label>
         <textarea
+          formControlName="description"
+          maxlength="300"
           appAutoResize
           name="details"
           placeholder="اكتب تفاصيل الاقتراح..."
           class="resize-none p-3 rounded-lg outline-none placeholder:text-black bg-transparent"
         ></textarea>
-        <select name="category" id="category" class="w-52">
-          <option value="category" disabled selected>الفئة</option>
-          <option value="ui">تحسين واجهة المستخدم</option>
+        <label for="category">الفئة</label>
+        <select name="category" class="w-52" formControlName="category">
+          <option value="ui" selected>تحسين واجهة المستخدم</option>
           <option value="ux">تحسين تجربة المستخدم</option>
           <option value="enhancement">تحسينات أخرى</option>
         </select>
       </div>
+      <div class="p-2 border-t bg-gray-100 flex space-x-rtl-1 items-center">
+        <button
+          type="submit"
+          class="bg-cyanBlue border border-black text-white px-4 py-2 rounded-md hover:opacity-80 duration-200"
+        >
+          إضافة الاقتراح
+        </button>
+        <button
+          type="button"
+          (click)="reset()"
+          class="bg-slate-200 text-black border border-black px-4 py-2 rounded-md hover:opacity-80 duration-200"
+        >
+          إلغاء
+        </button>
+
+        <!-- adding files -->
+        <div class="p-3">
+          <label
+            for="file-upload"
+            class="cursor-pointer text-blue-600 hover:opacity-80 duration-200"
+            ><i class="fa-solid fa-paperclip"></i
+          ></label>
+          <input
+            type="file"
+            id="file-upload"
+            multiple
+            class="hidden"
+            (change)="onFileChange($event)"
+          />
+        </div>
+        @if(filesArray.length > 0){
+        <div>
+          <p class="font-bold">الملفات المضافة:</p>
+          <ul class="list-none list-inside overflow-scroll max-h-32">
+            @for(filee of filesArray; track filee){
+            <li>{{ filee.name }}</li>
+            }
+          </ul>
+        </div>
+        }
+      </div>
     </form>
   </div>
-  <div></div>
+  <div class="border rounded-md">
+    <div
+      class="p-2 h-80 border-b bg-gray-100 flex space-x-rtl-1 items-center"
+    ></div>
+  </div>
 </div>

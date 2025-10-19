@@ -24,16 +24,16 @@ export function passwordValidator(): ValidatorFn {
     const errors: string[] = [];
 
     if (value.length < 8) {
-      errors.push('Password must be at least 8 characters long.');
+      errors.push('كلمة المرور يجب أن تكون 8 أحرف على الأقل.');
     }
     if (!/[A-Z]/.test(value)) {
-      errors.push('Password must contain at least one uppercase letter.');
+      errors.push('كلمة المرور يجب أن تحتوي على حرف كبير واحد على الأقل.');
     }
     if (!/[a-z]/.test(value)) {
-      errors.push('Password must contain at least one lowercase letter.');
+      errors.push('كلمة المرور يجب أن تحتوي على حرف صغير واحد على الأقل.');
     }
     if (!/[0-9]/.test(value)) {
-      errors.push('Password must contain at least one number.');
+      errors.push('كلمة المرور يجب أن تحتوي على رقم واحد على الأقل.');
     }
 
     return errors.length > 0 ? { passwordStrength: errors } : null;

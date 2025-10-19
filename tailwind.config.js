@@ -10,6 +10,7 @@ module.exports = {
   theme: {
     fontFamily: {
       fustat: ["Fustat", "sans-serif"],
+      ibmArabic: ['"IBM Plex Sans Arabic"', "sans-serif"],
       serif: ['"Times New Roman"', "serif"],
       mono: ["monospace"],
     },
