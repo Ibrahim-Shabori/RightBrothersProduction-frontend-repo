@@ -1,1 +1,236 @@
-<p>bugs works!</p>
+<div class="flex flex-col gap-8">
+  <div>
+    <h2 class="text-2xl font-bold text-slate-800 mb-2">الأخطاء المبلغة</h2>
+    <p class="text-slate-500 leading-relaxed">
+      واجهت مشكلة؟
+      <span class="text-red-600 font-bold">يرجى البحث أولاً</span>
+      للتأكد من أن الخطأ لم يتم الإبلاغ عنه مسبقاً.
+    </p>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow">
+    <div class="bg-red-50 border-b border-red-100 p-4">
+      <h3 class="font-bold text-red-700 flex items-center gap-2">
+        <i class="pi pi-exclamation-triangle"></i>
+        إبلاغ عن خطأ جديد
+      </h3>
+    </div>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="p-6 flex flex-col gap-6"
+    >
+      <div class="flex flex-col gap-2">
+        <p-floatLabel>
+          <input
+            pInputText
+            id="title"
+            formControlName="title"
+            class="w-full"
+            maxlength="40"
+            [ngClass]="{
+              'ng-invalid ng-dirty': form.get('title')?.invalid && submitted()
+            }"
+          />
+          <label for="title">عنوان الخطأ (باختصار)</label>
+        </p-floatLabel>
+        @if(form.get('title')?.invalid && submitted()){
+        <small class="text-red-500">العنوان مطلوب ولا يتجاوز 40 حرفاً.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p-floatLabel>
+          <textarea
+            pTextarea
+            id="description"
+            formControlName="description"
+            rows="5"
+            maxlength="300"
+            class="w-full"
+            style="resize: none"
+            placeholder="اشرح خطوات إعادة إنتاج الخطأ..."
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                form.get('description')?.invalid && submitted()
+            }"
+          ></textarea>
+          <label for="description">تفاصيل الخطأ / خطوات التكرار</label>
+        </p-floatLabel>
+        @if(form.get('description')?.invalid && submitted()){
+        <small class="text-red-500">التفاصيل مطلوبة ولا تتجاوز 300 حرف.</small>
+        }
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <p-floatLabel>
+            <p-autoComplete
+              formControlName="category"
+              [suggestions]="filteredCategories"
+              (completeMethod)="searchCategory($event)"
+              field="label"
+              [dropdown]="true"
+              [forceSelection]="true"
+              scrollHeight="200px"
+              placeholder="اختر نوع الخطأ"
+              styleClass="w-full"
+              inputStyleClass="w-full"
+              scrollHeight="10rem"
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  form.get('category')?.invalid && submitted()
+              }"
+            >
+            </p-autoComplete>
+            <label>نوع الخطأ</label>
+          </p-floatLabel>
+
+          @if(form.get('category')?.invalid && submitted()){
+          <small class="text-red-500">الفئة مطلوبة.</small>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3">
+            <input
+              type="file"
+              id="file-upload"
+              multiple
+              class="hidden"
+              (change)="onFileChange($event)"
+              #fileInput
+            />
+            <p-button
+              label="إرفاق لقطة شاشة"
+              icon="pi pi-camera"
+              severity="secondary"
+              [outlined]="true"
+              (onClick)="fileInput.click()"
+            />
+            <span class="text-sm text-slate-400">صور أو فيديو (Max 20MB)</span>
+          </div>
+
+          @if (form.get('files')?.hasError('maxTotalFileSize')) {
+          <small class="text-red-500">الحجم الكلي يتجاوز 20MB</small>
+          }
+        </div>
+      </div>
+
+      @if(filesArray.length > 0){
+      <div class="flex flex-wrap gap-2 mt-2">
+        @for(file of filesArray; track file.name){
+        <div
+          class="bg-red-50 text-red-700 px-3 py-1 rounded-md text-sm flex items-center gap-2 border border-red-100"
+        >
+          <i class="pi pi-image"></i>
+          <span class="max-w-[150px] truncate">{{ file.name }}</span>
+        </div>
+        }
+      </div>
+      }
+
+      <div class="flex gap-3 pt-2 border-t border-slate-100 mt-2">
+        <p-button
+          label="الإبلاغ عن الخطأ"
+          icon="pi pi-exclamation-circle"
+          severity="danger"
+          type="submit"
+          [rounded]="true"
+        />
+        <p-button
+          label="إلغاء"
+          icon="pi pi-times"
+          severity="secondary"
+          [text]="true"
+          (onClick)="reset()"
+        />
+      </div>
+    </form>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div
+      class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm"
+    >
+      <div class="w-full md:w-1/2">
+        <p-iconField iconPosition="left">
+          <p-inputIcon styleClass="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="searchQuery"
+            placeholder="بحث في الأخطاء المبلغة..."
+            class="w-full border-none shadow-none focus:ring-0"
+          />
+        </p-iconField>
+      </div>
+
+      <p-selectButton
+        [options]="sortOptions"
+        [(ngModel)]="currentSort"
+        optionLabel="label"
+        optionValue="value"
+        [unselectable]="false"
+      />
+    </div>
+
+    <div class="flex flex-col gap-4">
+      @for(req of displayedProducts(); track req.requestTitle){
+
+      <div
+        class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex gap-4 md:gap-6 group"
+      >
+        <div
+          class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-2 h-fit min-w-[3.5rem] border border-slate-100 group-hover:border-red-200 cursor-pointer hover:bg-red-50 transition-colors"
+        >
+          <i
+            class="pi pi-chevron-up text-slate-400 group-hover:text-red-600 mb-1"
+          ></i>
+          <span
+            class="font-bold text-lg text-slate-700 group-hover:text-red-700 leading-none"
+            >{{ req.votesCount }}</span
+          >
+        </div>
+
+        <div class="flex flex-col gap-2 flex-grow min-w-0">
+          <div class="flex justify-between items-start gap-4">
+            <h3
+              class="font-bold text-slate-800 text-lg leading-snug break-words"
+            >
+              {{ req.requestTitle }}
+            </h3>
+            <p-tag
+              [value]="req.category"
+              [severity]="getCategorySeverity(req.category)"
+              styleClass="uppercase text-xs"
+            ></p-tag>
+          </div>
+
+          <div
+            class="flex items-center gap-4 text-sm text-slate-500 mt-auto pt-2"
+          >
+            <span class="flex items-center gap-1">
+              <i class="pi pi-clock text-xs"></i>
+              {{ req.createdAt | date : "shortDate" }}
+            </span>
+            <span class="flex items-center gap-1 text-red-600 font-medium">
+              <i class="pi pi-exclamation-circle text-xs"></i>
+              {{ req.requestType }}
+            </span>
+          </div>
+        </div>
+      </div>
+      } @if(displayedProducts().length === 0){
+      <div
+        class="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300"
+      >
+        <i class="pi pi-check-circle text-4xl text-green-500 mb-4 block"></i>
+        <p class="text-slate-500 font-bold">رائع! لا توجد أخطاء مطابقة.</p>
+        <p class="text-slate-400 text-sm">أو كن أول من يبلغ عن هذا الخطأ.</p>
+      </div>
+      }
+    </div>
+  </div>
+</div>

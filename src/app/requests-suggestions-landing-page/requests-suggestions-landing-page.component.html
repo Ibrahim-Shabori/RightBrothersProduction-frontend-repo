@@ -1,24 +1,45 @@
 <div
-  class="container w-full flex justify-center space-x-rtl-3 mt-24 font-ibmArabic mx-auto"
+  class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 font-ibmArabic min-h-screen"
 >
-  <div class="flex flex-col space-y-2">
-    <h3 class="p-2 text-slate-900 font-bold">لوحة المقترحات</h3>
-    <h5
-      class="p-2 cursor-pointer rounded-md text-slate-600 duration-200 hover:text-slate-950 hover:bg-slate-300"
-      [class.text-slate-950]="(type$ | async) === 'features'"
-      [class.bg-slate-300]="(type$ | async) === 'features'"
-      [routerLink]="['features']"
-    >
-      اقتراحات الإضافة
-    </h5>
-    <h5
-      class="p-2 cursor-pointer rounded-md text-slate-600 duration-200 hover:text-slate-950 hover:bg-slate-300"
-      [class.text-slate-950]="(type$ | async) === 'bugs'"
-      [class.bg-slate-300]="(type$ | async) === 'bugs'"
-      [routerLink]="['bugs']"
-    >
-      الأخطاء المبلغة
-    </h5>
+  <div
+    class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start position-relative"
+  >
+    <div class="lg:col-span-1 top-28 z-40">
+      <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-2">
+        <h3
+          class="p-4 text-slate-900 font-bold text-lg border-b border-slate-100 mb-2"
+        >
+          لوحة المقترحات
+        </h3>
+
+        <div class="flex flex-col gap-1">
+          <a
+            [routerLink]="['features']"
+            class="flex items-center gap-3 p-3 rounded-lg transition-all duration-200 cursor-pointer text-slate-600 hover:bg-slate-50 hover:text-primary-600"
+            [class.bg-primary-50]="(type$ | async) === 'features'"
+            [class.text-primary-700]="(type$ | async) === 'features'"
+            [class.font-bold]="(type$ | async) === 'features'"
+          >
+            <i class="pi pi-lightbulb"></i>
+            <span>اقتراحات الإضافة</span>
+          </a>
+
+          <a
+            [routerLink]="['bugs']"
+            class="flex items-center gap-3 p-3 rounded-lg transition-all duration-200 cursor-pointer text-slate-600 hover:bg-slate-50 hover:text-red-600"
+            [class.bg-red-50]="(type$ | async) === 'bugs'"
+            [class.text-red-700]="(type$ | async) === 'bugs'"
+            [class.font-bold]="(type$ | async) === 'bugs'"
+          >
+            <i class="pi pi-exclamation-circle"></i>
+            <span>الأخطاء المبلغة</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-3">
+      <router-outlet></router-outlet>
+    </div>
   </div>
-  <router-outlet></router-outlet>
 </div>

@@ -1,36 +1,61 @@
-<div class="container flex justify-center items-center mx-auto">
-  <div
-    class="flex items-center justify-between w-full h-20 bg-gray-50 border-b border-black shadow-gray-400 font-ibmArabic px-6"
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <p-menubar
+    [model]="items"
+    class="rounded-2xl border border-surface-200 shadow-lg bg-white/80 backdrop-blur-md px-6 py-3"
   >
-    <div
-      class="flex items-center space-x-rtl-4 justify-center cursor-pointer"
-      routerLink="/"
-    >
-      <img src="/icon.png" alt="RightBrothers Icon" class="w-16" />
-    </div>
-    <div></div>
-    <div class="flex items-center space-x-rtl-4 justify-center text-xl">
-      @if ((role) === 'Admin') {
-      <app-button bgColor="bg-cyanBlue" borderColor="border-cyanBlue">
-        لوحة التحكم
-      </app-button>
-      } @if (isLoggedIn$ | async) {
-      <app-button
-        bgColor="bg-red-500"
-        borderColor="border-red-600"
-        (click)="logout()"
+    <ng-template pTemplate="start">
+      <a
+        routerLink="/"
+        class="flex items-center gap-3 outline-none no-underline group"
       >
-        تسجيل الخروج
-      </app-button>
-      } @else {
-      <app-button
-        borderColor="border-cyanBlue"
-        bgColor="bg-cyanBlue"
-        [routerLink]="['auth/login']"
-        >دخول</app-button
-      >
-      <app-button [routerLink]="['auth/signup']"> إنشاء حساب </app-button>
-      }
-    </div>
-  </div>
+        <img
+          src="/icon.png"
+          class="w-10 h-10 group-hover:scale-105 transition-transform"
+          alt="Logo"
+        />
+        <span
+          class="font-ibmArabic font-bold text-xl text-slate-800 hidden md:block"
+        >
+          روبست بتس
+        </span>
+      </a>
+    </ng-template>
+
+    <ng-template pTemplate="end">
+      <div class="flex items-center gap-3">
+        @if (isLoggedIn) { @if (role === 'Admin') {
+        <p-tag
+          value="مدير النظام"
+          severity="danger"
+          class="hidden md:block"
+        ></p-tag>
+        }
+        <p-button
+          label="خروج"
+          icon="pi pi-power-off"
+          severity="secondary"
+          text="true"
+          (onClick)="logout()"
+          styleClass="font-ibmArabic font-bold"
+        />
+        } @else {
+        <p-button
+          label="دخول"
+          [routerLink]="['/auth/signin']"
+          severity="secondary"
+          [text]="true"
+          styleClass="font-ibmArabic font-bold"
+        />
+
+        <p-button
+          label="حساب جديد"
+          [routerLink]="['/auth/signup']"
+          [rounded]="true"
+          severity="primary"
+          styleClass="font-ibmArabic font-bold px-6"
+        />
+        }
+      </div>
+    </ng-template>
+  </p-menubar>
 </div>

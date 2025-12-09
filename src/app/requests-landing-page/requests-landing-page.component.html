@@ -1,125 +1,207 @@
 <div
-  class="container mx-auto w-fit mt-24 mb-12 xl:mt-28 font-ibmArabic flex flex-col space-y-5 items-center"
+  class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 font-ibmArabic min-h-screen"
 >
-  <div class="w-full p-10 flex flex-col space-y-4">
-    <div>
-      <h2 class="text-3xl font-bold">لوحة المقترحات</h2>
+  <div
+    class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12"
+  >
+    <div class="text-center md:text-right">
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">لوحة المقترحات</h1>
+      <p class="text-slate-500">ساعدنا في تحديد أولويات التطوير القادمة</p>
     </div>
-    <div class="flex justify-between xl:justify-normal xl:space-x-rtl-3">
-      <app-button
-        bgColor="bg-white hover:bg-slate-200"
-        borderColor="border-black"
-        textColor="text-black"
+
+    <div class="flex gap-3 w-full md:w-auto">
+      <p-button
+        label="اقتراح ميزة"
+        icon="pi pi-plus"
         [routerLink]="['../requests-suggestions/features']"
-        >اقتراحات الإضافة</app-button
-      >
-      <app-button
-        bgColor="bg-white hover:bg-slate-200"
-        borderColor="border-black"
-        textColor="text-black"
+        styleClass="w-full md:w-auto font-bold bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+        [outlined]="true"
+      />
+
+      <p-button
+        label="إبلاغ عن خطأ"
+        icon="pi pi-exclamation-circle"
         [routerLink]="['../requests-suggestions/bugs']"
-        >الأخطاء المبلغة</app-button
-      >
+        severity="danger"
+        styleClass="w-full md:w-auto font-bold bg-white text-red-600 border-slate-200 hover:bg-red-50 hover:border-red-200"
+        [outlined]="true"
+      />
     </div>
   </div>
 
-  <div class="flex flex-col w-full spacy-y-1 justify-center items-center">
-    <div class="relative flex justify-between items-center w-full px-10">
-      <h2 class="text-3xl font-bold">خارطة التنفيذ</h2>
-      <div class="relative dropdown-container">
-        <app-button (click)="toggleDropdown()">
-          فلترة
-          <i class="fa-solid fa-filter"></i>
-        </app-button>
-        @if (isOpen){
-        <div
-          class="absolute top-full left-0 p-2 mt-2 w-48 rounded-lg shadow-lg bg-white border border-gray-200 z-10"
+  <div
+    class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 pb-6 border-b border-slate-100"
+  >
+    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+      <i class="pi pi-map text-primary-500"></i>
+      خارطة التنفيذ
+    </h2>
+
+    <div class="w-full sm:w-auto">
+      <p-multiSelect
+        [options]="filterOptions"
+        [(ngModel)]="selectedCategories"
+        defaultLabel="تصفية حسب النوع"
+        optionLabel="label"
+        optionValue="value"
+        display="chip"
+        [showClear]="true"
+        appendTo="body"
+        placeholder="اختر النوع"
+        class="w-full sm:w-64 z-50"
+        [pt]="{
+          root: { class: 'border-slate-200 shadow-sm' },
+          label: { class: 'text-sm font-bold text-slate-600' }
+        }"
+      >
+        <ng-template pTemplate="emptyfilter">
+          <span class="p-2">لا توجد نتائج</span>
+        </ng-template>
+      </p-multiSelect>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+    <div class="flex flex-col gap-4">
+      <div
+        class="flex items-center gap-2 px-1 py-2 border-b-2 border-blue-500 mb-2"
+      >
+        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+        <span class="font-bold text-slate-700">قيد المراجعة</span>
+        <span
+          class="mr-auto bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-full"
         >
-          <div class="flex space-x-rtl-1 p-1">
-            <input type="checkbox" id="all" name="all" checked />
-            <label for="all">الكل</label>
+          {{ requests.review.length }}
+        </span>
+      </div>
+      <div
+        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
+      >
+        @for (req of requests.review; track req.id) {
+        <div
+          class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4"
+        >
+          <div
+            class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-1 h-fit min-w-[3rem] border border-slate-100 group-hover:border-primary-200 cursor-pointer hover:bg-primary-50 transition-colors"
+          >
+            <i
+              class="pi pi-chevron-up text-slate-400 group-hover:text-primary-600"
+            ></i>
+            <span
+              class="font-bold text-sm text-slate-700 group-hover:text-primary-700"
+              >{{ req.votes }}</span
+            >
           </div>
-          <div class="flex space-x-rtl-1 p-1">
-            <input type="checkbox" id="suggestion" name="suggestion" />
-            <label for="suggestion">اقتراح إضافة</label>
-          </div>
-          <div class="flex space-x-rtl-1 p-1">
-            <input type="checkbox" id="bug" name="bug" />
-            <label for="bug">خطأ مبلّغ</label>
-          </div>
-          <div class="flex space-x-rtl-1 p-1">
-            <input type="checkbox" id="question" name="question" />
-            <label for="question">سؤال</label>
-          </div>
-          <div class="flex space-x-rtl-1 p-1">
-            <input type="checkbox" id="other" name="other" />
-            <label for="other">أخرى</label>
+          <div class="flex flex-col gap-2 w-full">
+            <h3 class="font-bold text-slate-800 text-sm leading-relaxed">
+              {{ req.title }}
+            </h3>
+            <div class="mt-auto pt-2">
+              <p-tag
+                [value]="getTypeLabel(req.type)"
+                [severity]="getTypeSeverity(req.type)"
+                class="text-xs font-ibmArabic"
+              ></p-tag>
+            </div>
           </div>
         </div>
         }
       </div>
     </div>
 
-    <div
-      class="p-10 text-center flex-col xl:flex-row items-center flex justify-center xl:items-start space-y-6 xl:space-y-0 xl:space-x-rtl-6"
-    >
-      <app-request-card
-        title="قيد المراجعة"
-        colorClass="bg-blue-800 border-blue-800"
+    <div class="flex flex-col gap-4">
+      <div
+        class="flex items-center gap-2 px-1 py-2 border-b-2 border-yellow-500 mb-2"
       >
-        <app-request-item
-          votesCount="341"
-          requestTitle="السة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح ة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-      </app-request-card>
+        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+        <span class="font-bold text-slate-700">قيد العمل</span>
+        <span
+          class="mr-auto bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-full"
+        >
+          {{ requests.inProgress.length }}
+        </span>
+      </div>
 
-      <app-request-card
-        title="قيد العمل"
-        colorClass="bg-yellow-500 border-yellow-500"
+      <div
+        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
       >
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-      </app-request-card>
+        @for (req of requests.inProgress; track req.id) {
+        <div
+          class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4"
+        >
+          <div
+            class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-1 h-fit min-w-[3rem] border border-slate-100 group-hover:border-yellow-200 cursor-pointer hover:bg-yellow-50 transition-colors"
+          >
+            <i
+              class="pi pi-chevron-up text-slate-400 group-hover:text-yellow-600"
+            ></i>
+            <span
+              class="font-bold text-sm text-slate-700 group-hover:text-yellow-700"
+              >{{ req.votes }}</span
+            >
+          </div>
+          <div class="flex flex-col gap-2 w-full">
+            <h3 class="font-bold text-slate-800 text-sm leading-relaxed">
+              {{ req.title }}
+            </h3>
+            <div class="mt-auto pt-2">
+              <p-tag
+                [value]="getTypeLabel(req.type)"
+                [severity]="getTypeSeverity(req.type)"
+                class="text-xs font-ibmArabic"
+              ></p-tag>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
 
-      <app-request-card
-        title="تم التنفيذ"
-        colorClass="bg-green-800 border-green-800"
+    <div class="flex flex-col gap-4">
+      <div
+        class="flex items-center gap-2 px-1 py-2 border-b-2 border-green-500 mb-2"
       >
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح لمستخدمين أكثر بالدخل إلى نفس المنصة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-        <app-request-item
-          votesCount="341"
-          requestTitle="السماح لمستخدمين أكثر بالدخول إلى نفس المنصة"
-          requestType="اقتراح إضافة"
-        ></app-request-item>
-      </app-request-card>
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        <span class="font-bold text-slate-700">تم التنفيذ</span>
+        <span
+          class="mr-auto bg-slate-100 text-slate-600 text-xs font-bold px-2 py-1 rounded-full"
+        >
+          {{ requests.done.length }}
+        </span>
+      </div>
+
+      <div
+        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
+      >
+        @for (req of requests.done; track req.id) {
+        <div
+          class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4 opacity-80 hover:opacity-100"
+        >
+          <div
+            class="flex flex-col items-center justify-center bg-green-50 rounded-lg px-2 py-1 h-fit min-w-[3rem] border border-green-100"
+          >
+            <i class="pi pi-check text-green-600"></i>
+            <span class="font-bold text-sm text-green-700">{{
+              req.votes
+            }}</span>
+          </div>
+          <div class="flex flex-col gap-2 w-full">
+            <h3
+              class="font-bold text-slate-800 text-sm leading-relaxed line-through decoration-slate-300"
+            >
+              {{ req.title }}
+            </h3>
+            <div class="mt-auto pt-2">
+              <p-tag
+                value="منشور"
+                severity="success"
+                class="text-xs font-ibmArabic"
+              ></p-tag>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
     </div>
   </div>
 </div>

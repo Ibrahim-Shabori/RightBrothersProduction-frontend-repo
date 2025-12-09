@@ -1,33 +1,59 @@
-<div class="font-ibmArabic">
+<div class="flex min-h-screen w-full">
   <div
-    class="mx-auto mt-24 mb-24 w-full max-w-md rounded-xl bg-white shadow-lg p-8"
+    class="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 relative bg-white bg-dot-pattern-light"
+  >
+    <a
+      routerLink="/"
+      class="absolute z-50 top-6 right-6 flex items-center gap-2 no-underline text-slate-700 hover:text-primary transition-colors"
+    >
+      <img
+        src="/icon.png"
+        class="w-8 h-8 group-hover:scale-105 transition-transform"
+        alt="Logo"
+      />
+      <span class="font-bold text-lg font-ibmArabic">روبست بتس</span>
+    </a>
+
+    <p-card class="w-full max-w-md shadow-xl rounded-2xl border-none">
+      <div class="flex justify-center mb-8">
+        <p-selectButton
+          [options]="navOptions"
+          [(ngModel)]="currentRoute"
+          (onChange)="onRouteSwitch($event)"
+          optionLabel="label"
+          optionValue="value"
+          [unselectable]="true"
+          styleClass="w-full grid grid-cols-2"
+          class="w-100 h-14"
+        />
+      </div>
+
+      <router-outlet></router-outlet>
+    </p-card>
+  </div>
+
+  <div
+    class="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-slate-900"
   >
     <div
-      class="flex items-center min-w-96 w-full space-x-rtl-1 justify-between text-xl mb-6 p-2 rounded-lg"
-    >
-      <a
-        class="flex w-1/2 bg-slate-300 items-center cursor-pointer duration-200 justify-center text-center text-blackBlue p-5 rounded-lg"
-        [class.bg-opacity-5]="(mode$ | async) === 'login'"
-        [routerLink]="['login']"
-      >
-        دخول
-      </a>
-      <a
-        class="flex bg-slate-300 w-1/2 items-center cursor-pointer duration-200 justify-center text-center text-blackBlue p-5 rounded-lg"
-        [class.bg-opacity-5]="(mode$ | async) === 'signup'"
-        [routerLink]="['signup']"
-      >
-        إنشاء حساب
-      </a>
-    </div>
-    <div>
-      @if (mode$ | async; as mode) {
-      <h2 class="text-3xl mb-6">
-        {{ mode === "login" ? "أهلاً بعودتك" : "أنشئ حسابا جديداً" }}
-      </h2>
-      }
+      class="absolute inset-0 bg-gradient-to-br from-slate-900 via-primary-950 to-primary-900 opacity-90"
+    ></div>
 
-      <router-outlet />
+    <div class="absolute inset-0 bg-dot-pattern-white opacity-50"></div>
+
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/20 rounded-full blur-[100px]"
+    ></div>
+
+    <div class="relative z-10 text-center p-12 text-white">
+      <h1 class="text-5xl font-bold font-ibmArabic mb-4 leading-tight">
+        أهلاً بك في <br />
+        <span class="text-primary-400">روبست بتس</span>
+      </h1>
+      <p class="text-xl text-slate-300 max-w-lg mx-auto leading-relaxed">
+        الحل الأمثل لإدارة مؤسستك. انضم إلينا اليوم وابدأ رحلتك في تنظيم أعمالك
+        بكفاءة عالية.
+      </p>
     </div>
   </div>
 </div>

@@ -1,0 +1,74 @@
+<div class="w-full" [style.width]="width()">
+  <!-- Search Bar -->
+  <div
+    class="flex items-center gap-2 px-4 py-2.5 bg-white border-2 rounded-lg transition-all duration-200"
+    [class.border-gray-300]="!isFocused()"
+    [class.border-blue-500]="isFocused()"
+    [class.shadow-lg]="isFocused()"
+    [class.shadow-blue-100]="isFocused()"
+    [class.hover:border-gray-400]="!isFocused()"
+  >
+    @if (showIcon()) {
+    <i class="fas fa-search text-gray-400 flex-shrink-0"></i>
+    }
+
+    <input
+      type="text"
+      class="flex-1 border-none outline-none text-base bg-transparent text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+      [placeholder]="placeholder()"
+      [(ngModel)]="searchValue"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (input)="onInput()"
+      [disabled]="disabled()"
+    />
+
+    @if (searchValue() && showClearButton()) {
+    <button
+      class="flex items-center justify-center p-1 bg-transparent border-none rounded cursor-pointer text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600"
+      (click)="clearSearch()"
+      type="button"
+      aria-label="Clear search"
+    >
+      <i class="fas fa-times text-sm"></i>
+    </button>
+    } @if (loading()) {
+    <i class="fas fa-spinner fa-spin text-blue-500"></i>
+    }
+  </div>
+
+  <!-- Sort Buttons -->
+  @if (showSortButtons()) {
+  <div class="flex items-center gap-2 mt-4 justify-evenly">
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200"
+      [class.bg-blue-500]="sortBy() === 'newest'"
+      [class.text-white]="sortBy() === 'newest'"
+      [class.bg-gray-100]="sortBy() !== 'newest'"
+      [class.text-gray-700]="sortBy() !== 'newest'"
+      [class.hover:bg-blue-600]="sortBy() === 'newest'"
+      [class.hover:bg-gray-200]="sortBy() !== 'newest'"
+      (click)="setSortBy('newest')"
+    >
+      <i class="fas fa-clock"></i>
+      <span>الأحدث</span>
+    </button>
+
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200"
+      [class.bg-blue-500]="sortBy() === 'mostVoted'"
+      [class.text-white]="sortBy() === 'mostVoted'"
+      [class.bg-gray-100]="sortBy() !== 'mostVoted'"
+      [class.text-gray-700]="sortBy() !== 'mostVoted'"
+      [class.hover:bg-blue-600]="sortBy() === 'mostVoted'"
+      [class.hover:bg-gray-200]="sortBy() !== 'mostVoted'"
+      (click)="setSortBy('mostVoted')"
+    >
+      <i class="fas fa-fire"></i>
+      <span>الأكثر تصويتاً</span>
+    </button>
+  </div>
+  }
+</div>

@@ -1,0 +1,151 @@
+<footer
+  class="bg-white border-t border-gray-200 mt-auto pt-16 pb-8 font-ibmArabic"
+>
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12"
+    >
+      <div class="md:col-span-2 lg:col-span-1">
+        <a routerLink="/" class="flex items-center gap-3 mb-6 outline-none">
+          <img
+            src="/icon.png"
+            alt="RightBrothers Logo"
+            class="w-10 h-10 grayscale hover:grayscale-0 transition-all duration-300"
+          />
+          <span class="text-xl font-bold text-slate-800">روبست بتس</span>
+        </a>
+        <p class="text-slate-500 text-sm leading-relaxed mb-6">
+          نحن نبني الأدوات البرمجية التي تساعدك على تحويل الأفكار إلى واقع. انضم
+          إلينا اليوم وابدأ رحلتك في عالم التطوير.
+        </p>
+        <div class="flex gap-4">
+          <a
+            href="#"
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-blue-600 hover:text-white transition-colors"
+          >
+            <i class="pi pi-facebook"></i>
+          </a>
+          <a
+            href="#"
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-sky-500 hover:text-white transition-colors"
+          >
+            <i class="pi pi-twitter"></i>
+          </a>
+          <a
+            href="#"
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-pink-600 hover:text-white transition-colors"
+          >
+            <i class="pi pi-instagram"></i>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-slate-900 mb-4">المنتج</h3>
+        <ul class="space-y-3 text-sm text-slate-500">
+          <li>
+            <a
+              routerLink="/download"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >تحميل البرنامج</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/features"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >المميزات</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/pricing"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >الأسعار</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/changelog"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >سجل التحديثات</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-slate-900 mb-4">مركز التطوير</h3>
+        <ul class="space-y-3 text-sm text-slate-500">
+          <li>
+            <a
+              routerLink="/feedback/dashboard"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >لوحة المتابعة</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/feedback/bug-report"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >الإبلاغ عن مشكلة</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/feedback/feature-request"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >اقتراح ميزة</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-slate-900 mb-4">الشركة</h3>
+        <ul class="space-y-3 text-sm text-slate-500">
+          <li>
+            <a
+              routerLink="/about"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >من نحن</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/contact"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >تواصل معنا</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/privacy"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >سياسة الخصوصية</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/terms"
+              class="hover:text-primary hover:translate-x-1 transition-all inline-block"
+              >شروط الاستخدام</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      class="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
+    >
+      <p class="text-slate-400 text-xs">
+        © {{ currentYear }} RobustBits Inc. جميع الحقوق محفوظة.
+      </p>
+
+      <div class="flex gap-6 text-xs text-slate-400">
+        <span>صنع بكل ❤️ في مصر</span>
+      </div>
+    </div>
+  </div>
+</footer>

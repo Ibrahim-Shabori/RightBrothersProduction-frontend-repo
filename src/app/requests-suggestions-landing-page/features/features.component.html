@@ -1,109 +1,227 @@
-<div class="flex flex-col space-y-5 p-2">
-  <div class="flex flex-col space-y-2">
-    <h2 class="font-bold">اقتراحات الإضافة</h2>
-    <p>
-      الرجاء التأكد من عدم وجود الإضافة التي تود اقتراحها، ابحث من خلال خانة
-      البحث عن اقتراحك!
+<div class="flex flex-col gap-8">
+  <div>
+    <h2 class="text-2xl font-bold text-slate-800 mb-2">اقتراحات الإضافة</h2>
+    <p class="text-slate-500 leading-relaxed">
+      الرجاء التأكد من عدم وجود الإضافة التي تود اقتراحها.
+      <span class="text-primary-600 font-bold"
+        >بمجرد كتابة العنوان، سنبحث لك تلقائياً!</span
+      >
     </p>
   </div>
-  <div class="border rounded-md">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="flex flex-col space-y-2 p-3">
-        @if(form.get('title')?.invalid && submitted()){
-        <div class="text-red-500 text-sm">
-          العنوان مطلوب ولا يتجاوز 40 حرفاً.
-        </div>
-        } @if(form.get('description')?.invalid && submitted()){
-        <div class="text-red-500 text-sm">
-          التفاصيل مطلوبة ولا تتجاوز 300 حرف.
-        </div>
-        } @if(form.get('category')?.invalid && submitted()){
-        <div class="text-red-500 text-sm">الفئة مطلوبة.</div>
-        } @if (form.get('files')?.hasError('maxFileSize')) {
-        <div class="text-red-500 text-sm">
-          أحد الملفات يتجاوز الحد المسموح به وهو 5MB.
-        </div>
-        } @if (form.get('files')?.hasError('maxTotalFileSize')) {
-        <div class="text-red-500 text-sm">
-          مجموع أحجام الملفات يتجاوز الحد المسموح به وهو 20MB.
-        </div>
-        } @if (form.get('files')?.hasError('invalidFileType')) {
-        <div class="text-red-500 text-sm">
-          أحد الملفات له نوع غير مدعوم. الأنواع المدعومة: PNG, JPEG.
-        </div>
-        }
-        <!-- title, description, category, files -->
-        <label for="title">العنوان</label>
-        <textarea
-          formControlName="title"
-          maxlength="40"
-          appAutoResize
-          name="title"
-          placeholder="ضع هنا عنواناً مختصراً قصيراً..."
-          class="resize-none p-3 rounded-lg outline-none placeholder:text-black bg-transparent"
-        ></textarea>
-        <label for="title">التفاصيل</label>
-        <textarea
-          formControlName="description"
-          maxlength="300"
-          appAutoResize
-          name="details"
-          placeholder="اكتب تفاصيل الاقتراح..."
-          class="resize-none p-3 rounded-lg outline-none placeholder:text-black bg-transparent"
-        ></textarea>
-        <label for="category">الفئة</label>
-        <select name="category" class="w-52" formControlName="category">
-          <option value="ui" selected>تحسين واجهة المستخدم</option>
-          <option value="ux">تحسين تجربة المستخدم</option>
-          <option value="enhancement">تحسينات أخرى</option>
-        </select>
-      </div>
-      <div class="p-2 border-t bg-gray-100 flex space-x-rtl-1 items-center">
-        <button
-          type="submit"
-          class="bg-cyanBlue border border-black text-white px-4 py-2 rounded-md hover:opacity-80 duration-200"
-        >
-          إضافة الاقتراح
-        </button>
-        <button
-          type="button"
-          (click)="reset()"
-          class="bg-slate-200 text-black border border-black px-4 py-2 rounded-md hover:opacity-80 duration-200"
-        >
-          إلغاء
-        </button>
 
-        <!-- adding files -->
-        <div class="p-3">
-          <label
-            for="file-upload"
-            class="cursor-pointer text-blue-600 hover:opacity-80 duration-200"
-            ><i class="fa-solid fa-paperclip"></i
-          ></label>
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow">
+    <div class="bg-slate-50 border-b border-slate-100 p-4">
+      <h3 class="font-bold text-slate-700">إضافة مقترح جديد</h3>
+    </div>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="p-6 flex flex-col gap-6"
+    >
+      <div class="flex flex-col gap-2">
+        <p-floatLabel>
           <input
-            type="file"
-            id="file-upload"
-            multiple
-            class="hidden"
-            (change)="onFileChange($event)"
+            pInputText
+            id="title"
+            formControlName="title"
+            class="w-full"
+            maxlength="40"
+            [ngClass]="{
+              'ng-invalid ng-dirty': form.get('title')?.invalid && submitted()
+            }"
           />
+          <label for="title">عنوان المقترح</label>
+        </p-floatLabel>
+        @if(form.get('title')?.invalid && submitted()){
+        <small class="text-red-500">العنوان مطلوب ولا يتجاوز 40 حرفاً.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p-floatLabel>
+          <textarea
+            pTextarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            maxlength="300"
+            class="w-full"
+            style="resize: none"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                form.get('description')?.invalid && submitted()
+            }"
+          ></textarea>
+          <label for="description">التفاصيل</label>
+        </p-floatLabel>
+        @if(form.get('description')?.invalid && submitted()){
+        <small class="text-red-500">التفاصيل مطلوبة ولا تتجاوز 300 حرف.</small>
+        }
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <p-floatLabel>
+            <p-autoComplete
+              formControlName="category"
+              [suggestions]="filteredCategories"
+              (completeMethod)="searchCategory($event)"
+              field="label"
+              [dropdown]="true"
+              [forceSelection]="true"
+              placeholder="اختر الفئة"
+              scrollHeight="10rem"
+              class="w-full"
+              inputStyleClass="w-full"
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  form.get('category')?.invalid && submitted()
+              }"
+            >
+            </p-autoComplete>
+            <label>الفئة</label>
+          </p-floatLabel>
         </div>
-        @if(filesArray.length > 0){
-        <div>
-          <p class="font-bold">الملفات المضافة:</p>
-          <ul class="list-none list-inside overflow-scroll max-h-32">
-            @for(filee of filesArray; track filee){
-            <li>{{ filee.name }}</li>
-            }
-          </ul>
+
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3">
+            <input
+              type="file"
+              id="file-upload"
+              multiple
+              class="hidden"
+              (change)="onFileChange($event)"
+              #fileInput
+            />
+            <p-button
+              label="إرفاق ملفات"
+              icon="pi pi-paperclip"
+              severity="secondary"
+              [outlined]="true"
+              (onClick)="fileInput.click()"
+            />
+            <span class="text-sm text-slate-400">PNG, JPG, MP4 (Max 20MB)</span>
+          </div>
+
+          @if (form.get('files')?.hasError('maxTotalFileSize')) {
+          <small class="text-red-500">الحجم الكلي يتجاوز 20MB</small>
+          }
+        </div>
+      </div>
+
+      @if(filesArray.length > 0){
+      <div class="flex flex-wrap gap-2 mt-2">
+        @for(file of filesArray; track file.name){
+        <div
+          class="bg-primary-50 text-primary-700 px-3 py-1 rounded-md text-sm flex items-center gap-2 border border-primary-100"
+        >
+          <i class="pi pi-file"></i>
+          <span class="max-w-[150px] truncate">{{ file.name }}</span>
         </div>
         }
+      </div>
+      }
+
+      <div class="flex gap-3 pt-2 border-t border-slate-100 mt-2">
+        <p-button
+          label="إرسال المقترح"
+          icon="pi pi-send"
+          type="submit"
+          [rounded]="true"
+        />
+        <p-button
+          label="إلغاء"
+          icon="pi pi-times"
+          severity="secondary"
+          [text]="true"
+          (onClick)="reset()"
+        />
       </div>
     </form>
   </div>
-  <div class="border rounded-md">
+
+  <div class="flex flex-col gap-4">
     <div
-      class="p-2 h-80 border-b bg-gray-100 flex space-x-rtl-1 items-center"
-    ></div>
+      class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm"
+    >
+      <div class="w-full md:w-1/2">
+        <p-iconField iconPosition="left">
+          <p-inputIcon class="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="searchQuery"
+            placeholder="بحث في المقترحات..."
+            class="w-full border-none shadow-none focus:ring-0"
+          />
+        </p-iconField>
+      </div>
+
+      <p-selectButton
+        [options]="sortOptions"
+        [(ngModel)]="currentSort"
+        optionLabel="label"
+        optionValue="value"
+        [unselectable]="false"
+      />
+    </div>
+
+    <div class="flex flex-col gap-4">
+      @for(req of displayedProducts(); track req.requestTitle){
+
+      <div
+        class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex gap-4 md:gap-6 group"
+      >
+        <div
+          class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-2 h-fit min-w-[3.5rem] border border-slate-100 group-hover:border-primary-200 cursor-pointer hover:bg-primary-50 transition-colors"
+        >
+          <i
+            class="pi pi-chevron-up text-slate-400 group-hover:text-primary-600 mb-1"
+          ></i>
+          <span
+            class="font-bold text-lg text-slate-700 group-hover:text-primary-700 leading-none"
+            >{{ req.votesCount }}</span
+          >
+        </div>
+
+        <div class="flex flex-col gap-2 flex-grow min-w-0">
+          <div class="flex justify-between items-start gap-4">
+            <h3
+              class="font-bold text-slate-800 text-lg leading-snug break-words"
+            >
+              {{ req.requestTitle }}
+            </h3>
+            <p-tag
+              [value]="req.category"
+              severity="info"
+              class="uppercase text-xs"
+            ></p-tag>
+          </div>
+
+          <div
+            class="flex items-center gap-4 text-sm text-slate-500 mt-auto pt-2"
+          >
+            <span class="flex items-center gap-1">
+              <i class="pi pi-clock text-xs"></i>
+              {{ req.createdAt | date : "shortDate" }}
+            </span>
+            <span class="flex items-center gap-1">
+              <i class="pi pi-tag text-xs"></i>
+              {{ req.requestType }}
+            </span>
+          </div>
+        </div>
+      </div>
+      } @if(displayedProducts().length === 0){
+      <div
+        class="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300"
+      >
+        <i class="pi pi-search text-4xl text-slate-300 mb-4 block"></i>
+        <p class="text-slate-500 font-bold">لا توجد نتائج مطابقة</p>
+        <p class="text-slate-400 text-sm">كن أول من يقترح هذا العنوان!</p>
+      </div>
+      }
+    </div>
   </div>
 </div>

@@ -1,29 +1,86 @@
-<section id="hero" class="bg-lightGray">
+<section
+  class="relative bg-slate-50 min-h-screen flex items-center justify-center py-12 lg:py-20 font-ibmArabic overflow-hidden"
+>
   <div
-    class="p-10 text-center h-screen flex justify-center items-center flex-col font-ibmArabic"
-  >
-    <img src="RB-Accountant.svg" alt="RB Accountant logo" class="w-48" />
-    <h3 class="text-4xl font-bold text-darkGrayBlue md:text-5xl mb-8">
-      إدارة لجميع بيانات مؤسستك
-    </h3>
-    <p class="text-grayBlue text-2xl mb-10">
-      حمل التطبيق الآن وابدأ في إدارة مؤسستك بكل سهولة ويسر، فقط بنقرة زر!
-    </p>
+    class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-primary-100 rounded-full blur-3xl opacity-50 pointer-events-none"
+  ></div>
+  <div
+    class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-cyan-100 rounded-full blur-3xl opacity-50 pointer-events-none"
+  ></div>
 
-    <div
-      class="flex flex-col justify-center items-center space-y-6 md:flex-row md:space-y-0 md:space-x-rtl-4 text-white text-xl w-full"
-    >
-      <a
-        href="https://github.com/Ahmed101Mohammed/RB-Accountant/releases/download/v2.1.1/RB.Accountant.Setup.2.1.1.exe"
-        class="p-4 px-8 rounded-full bg-cyanBlue shadow-lg duration-200 hover:opacity-80"
-        >تحميل لنظام ويندوز</a
-      >
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div class="text-center lg:text-right order-2 lg:order-1">
+        <p-tag
+          [value]="'إصدار جديد ' + appVersion"
+          severity="info"
+          class="mb-6 px-3 py-1 text-sm rounded-full"
+        ></p-tag>
 
-      <a
-        routerLink="/requests"
-        class="text-blackBlue text-center text-sm underline duration-200 hover:opacity-80 hover:text-darkGrayBlue"
-        >تواجه مشكلة في التطبيق؟ / تريد أن تقترح إضافة؟</a
-      >
+        <h1
+          class="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6"
+        >
+          إدارة شاملة <br />
+          <span class="text-primary-600">لبيانات مؤسستك</span>
+        </h1>
+
+        <p
+          class="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+        >
+          حمل التطبيق الآن وابدأ في تنظيم حساباتك، إدارة المخزون، ومتابعة
+          العملاء بكل سهولة ويسر. كل ما تحتاجه في مكان واحد.
+        </p>
+
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+        >
+          <a
+            href="https://github.com/Ahmed101Mohammed/RB-Accountant/releases/download/v2.1.1/RB.Accountant.Setup.2.1.1.exe"
+            class="no-underline w-full sm:w-auto"
+          >
+            <p-button
+              label="تحميل لنظام ويندوز"
+              icon="pi pi-microsoft"
+              size="large"
+              [rounded]="true"
+              [raised]="true"
+              styleClass="w-full sm:w-auto font-bold px-8 py-3 bg-cyanBlue border-cyanBlue hover:bg-cyan-600"
+            />
+          </a>
+
+          <a
+            routerLink="/feedback/bug-report"
+            class="no-underline w-full sm:w-auto"
+          >
+            <p-button
+              label="واجهت مشكلة؟"
+              icon="pi pi-question-circle"
+              [text]="true"
+              severity="secondary"
+            />
+          </a>
+        </div>
+
+        <div
+          class="mt-8 flex items-center justify-center lg:justify-start gap-2 text-slate-400 text-sm"
+        >
+          <i class="pi pi-check-circle text-green-500"></i>
+          <span>متوافق مع Windows 10/11 (64-bit)</span>
+        </div>
+      </div>
+
+      <div class="flex justify-center order-1 lg:order-2">
+        <div class="relative w-64 md:w-80 lg:w-96">
+          <div
+            class="absolute inset-0 bg-primary-200 rounded-full blur-2xl opacity-20 animate-pulse"
+          ></div>
+          <img
+            src="RB-Accountant.svg"
+            alt="RB Accountant Interface"
+            class="relative w-full drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </section>

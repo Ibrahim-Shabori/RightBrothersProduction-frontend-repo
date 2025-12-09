@@ -1,4 +1,47 @@
-/* You can add global styles to this file, and also import other style files */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 1. Import Tailwind & PrimeNG Adapter */
+@import "primeicons/primeicons.css";
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+
+/* 2. Configure Your Theme (Replaces 'tailwind.config.js') */
+@theme {
+  /* --- FONTS --- */
+  /* Access these as 'font-fustat', 'font-ibmArabic', etc. */
+  --font-fustat: "Fustat", sans-serif;
+  --font-ibmArabic: "IBM Plex Sans Arabic", sans-serif;
+  --font-serif: "Times New Roman", serif;
+  --font-mono: monospace;
+
+  /* --- COLORS --- */
+  /* Access these as 'text-cyanBlue', 'bg-brownBlue', etc. */
+  --color-cyanBlue: #3fc9b2;
+  --color-brownBlue: #1f3d76;
+  --color-blackBlue: #101828;
+  --color-lightGray: #f9fafb;
+  --color-grayBlue: #475467;
+  --color-darkGrayBlue: #344054;
+  --color-veryLightGray: #f2f4f7;
+}
+
+/* 3. Global Reset (Optional but recommended for your fonts) */
+body {
+  font-family: var(--font-ibmArabic); /* Set your default font here */
+}
+
+/* 1. Subtle Dots for the White Background */
+.bg-dot-pattern-light {
+  background-image: radial-gradient(
+    #e5e7eb 1px,
+    transparent 1px
+  ); /* gray-200 */
+  background-size: 24px 24px; /* Space between dots */
+}
+
+/* 2. White Dots for the Dark Cover */
+.bg-dot-pattern-white {
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.15) 1px,
+    transparent 1px
+  );
+  background-size: 32px 32px;
+}

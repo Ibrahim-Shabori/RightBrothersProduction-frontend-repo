@@ -1,40 +1,51 @@
 import { Component, OnInit } from '@angular/core';
-import { distinctUntilChanged, filter, map, Observable, startWith } from 'rxjs';
-import { ActivatedRoute, Data, NavigationEnd, Router } from '@angular/router';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
-
+import { NavigationEnd, Router } from '@angular/router';
+import { RouterOutlet, RouterModule } from '@angular/router';
+import { SelectButtonModule } from 'primeng/selectbutton'; // or import { SelectButton } in v19+ standalone
+import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-auth',
-  imports: [RouterLink, RouterOutlet, AsyncPipe],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    SelectButtonModule,
+    CardModule,
+    RouterModule,
+    FormsModule,
+  ],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css',
 })
 export class AuthComponent implements OnInit {
-  mode$!: Observable<'login' | 'signup' | null>;
-  routerUrl: string = '';
+  navOptions = [
+    { label: 'دخول', value: 'signin' },
+    { label: 'إنشاء حساب', value: 'signup' },
+  ];
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  currentRoute: string = 'signin';
 
-  ngOnInit(): void {
-    this.routerUrl = this.router.url;
-    this.mode$ = this.router.events.pipe(
-      // only react on navigation end (but include one initial emission)
-      filter((e) => e instanceof NavigationEnd),
-      startWith(null), // emit once for the current route on init
-      map(() => this.findDeepestActivatedRoute(this.route)),
-      map((r) => r?.snapshot?.data?.['mode'] ?? null),
-      distinctUntilChanged()
-    );
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.syncButtonWithUrl(this.router.url);
+
+    // Keep button synced if user uses browser "Back" button
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.syncButtonWithUrl(event.urlAfterRedirects);
+      }
+    });
   }
 
-  private findDeepestActivatedRoute(
-    route: ActivatedRoute
-  ): ActivatedRoute | null {
-    let r: ActivatedRoute | null = route;
-    while (r && r.firstChild) {
-      r = r.firstChild;
+  syncButtonWithUrl(url: string) {
+    this.currentRoute = url.includes('signup') ? 'signup' : 'signin';
+  }
+
+  onRouteSwitch(event: any) {
+    if (event.value) {
+      this.router.navigate(['auth', event.value]);
     }
-    return r;
   }
 }
