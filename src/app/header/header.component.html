@@ -30,15 +30,46 @@
           class="hidden md:block"
         ></p-tag>
         }
-        <p-button
-          label="خروج"
-          icon="pi pi-power-off"
-          severity="secondary"
-          text="true"
-          (onClick)="logout()"
-          styleClass="font-ibmArabic font-bold"
+
+        <p-menu
+          #userMenu
+          [model]="userMenuItems"
+          [popup]="true"
+          appendTo="body"
+          styleClass="w-56 font-ibmArabic"
         />
+
+        <div
+          class="cursor-pointer flex items-center gap-2 hover:bg-slate-100 p-1 pr-3 rounded-full transition-colors border border-transparent hover:border-slate-200"
+          (click)="userMenu.toggle($event)"
+        >
+          <span
+            class="font-bold text-slate-700 text-sm hidden sm:block max-w-[120px] truncate"
+          >
+            {{ getShortName(currentUser?.fullName) }}
+          </span>
+
+          @if (userProfilePic == undefined){
+          <p-avatar
+            [label]="userInitials"
+            [icon]="!userProfilePic && !userInitials ? 'pi pi-user' : undefined"
+            shape="circle"
+            styleClass="bg-primary-100 text-primary-700 font-bold"
+          ></p-avatar>
+          } @else {
+          <p-avatar
+            [image]="userProfilePic"
+            [icon]="!userProfilePic && !userInitials ? 'pi pi-user' : undefined"
+            shape="circle"
+            styleClass="bg-primary-100 text-primary-700 font-bold"
+          ></p-avatar>
+          }
+
+          <i class="pi pi-chevron-down text-xs text-slate-400"></i>
+        </div>
+
         } @else {
+
         <p-button
           label="دخول"
           [routerLink]="['/auth/signin']"

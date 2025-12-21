@@ -9,6 +9,11 @@ import { RequestsSuggestionsLandingPageComponent } from './requests-suggestions-
 import { FeaturesComponent } from './requests-suggestions-landing-page/features/features.component';
 import { BugsComponent } from './requests-suggestions-landing-page/bugs/bugs.component';
 import { MainLayoutComponent } from './main-layout/main-layout.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ProfileContributionsComponent } from './profile/profile-contributions/profile-contributions.component';
+import { ProfileWatchlistComponent } from './profile/profile-watchlist/profile-watchlist.component';
+import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
+import { GuestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
   {
@@ -42,6 +47,25 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'profile',
+        component: ProfileComponent,
+        canActivate: [AuthGuard],
+        children: [
+          { path: '', redirectTo: 'contributions', pathMatch: 'full' },
+          { path: 'contributions', component: ProfileContributionsComponent },
+          { path: 'watchlist', component: ProfileWatchlistComponent },
+          { path: 'settings', component: ProfileSettingsComponent },
+        ],
+      },
+      {
+        path: 'profile/:userId',
+        component: ProfileComponent,
+        children: [
+          { path: '', redirectTo: 'contributions', pathMatch: 'full' },
+          { path: 'contributions', component: ProfileContributionsComponent },
+        ],
+      },
     ],
   },
   {
@@ -56,12 +80,12 @@ export const routes: Routes = [
       {
         path: 'signin',
         component: SigninComponent,
-        canActivate: [AuthGuard],
+        canActivate: [GuestGuard],
       },
       {
         path: 'signup',
         component: SignupComponent,
-        canActivate: [AuthGuard],
+        canActivate: [GuestGuard],
       },
     ],
   },

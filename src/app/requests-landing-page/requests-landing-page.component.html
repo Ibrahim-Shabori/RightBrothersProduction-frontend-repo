@@ -62,7 +62,7 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
       <div
         class="flex items-center gap-2 px-1 py-2 border-b-2 border-blue-500 mb-2"
       >
@@ -74,42 +74,28 @@
           {{ requests.review.length }}
         </span>
       </div>
+
       <div
-        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
+        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 pb-2"
       >
         @for (req of requests.review; track req.id) {
-        <div
-          class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4"
+        <app-request-card
+          [request]="req"
+          [showDescription]="true"
+          [showCategory]="true"
         >
-          <div
-            class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-1 h-fit min-w-[3rem] border border-slate-100 group-hover:border-primary-200 cursor-pointer hover:bg-primary-50 transition-colors"
-          >
-            <i
-              class="pi pi-chevron-up text-slate-400 group-hover:text-primary-600"
-            ></i>
-            <span
-              class="font-bold text-sm text-slate-700 group-hover:text-primary-700"
-              >{{ req.votes }}</span
-            >
-          </div>
-          <div class="flex flex-col gap-2 w-full">
-            <h3 class="font-bold text-slate-800 text-sm leading-relaxed">
-              {{ req.title }}
-            </h3>
-            <div class="mt-auto pt-2">
-              <p-tag
-                [value]="getTypeLabel(req.type)"
-                [severity]="getTypeSeverity(req.type)"
-                class="text-xs font-ibmArabic"
-              ></p-tag>
-            </div>
-          </div>
+        </app-request-card>
+        } @if (requests.review.length === 0) {
+        <div
+          class="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-xl"
+        >
+          لا يوجد طلبات قيد المراجعة
         </div>
         }
       </div>
     </div>
 
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
       <div
         class="flex items-center gap-2 px-1 py-2 border-b-2 border-yellow-500 mb-2"
       >
@@ -123,41 +109,26 @@
       </div>
 
       <div
-        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
+        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 pb-2"
       >
         @for (req of requests.inProgress; track req.id) {
-        <div
-          class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4"
+        <app-request-card
+          [request]="req"
+          [showDescription]="true"
+          [showCategory]="true"
         >
-          <div
-            class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-1 h-fit min-w-[3rem] border border-slate-100 group-hover:border-yellow-200 cursor-pointer hover:bg-yellow-50 transition-colors"
-          >
-            <i
-              class="pi pi-chevron-up text-slate-400 group-hover:text-yellow-600"
-            ></i>
-            <span
-              class="font-bold text-sm text-slate-700 group-hover:text-yellow-700"
-              >{{ req.votes }}</span
-            >
-          </div>
-          <div class="flex flex-col gap-2 w-full">
-            <h3 class="font-bold text-slate-800 text-sm leading-relaxed">
-              {{ req.title }}
-            </h3>
-            <div class="mt-auto pt-2">
-              <p-tag
-                [value]="getTypeLabel(req.type)"
-                [severity]="getTypeSeverity(req.type)"
-                class="text-xs font-ibmArabic"
-              ></p-tag>
-            </div>
-          </div>
+        </app-request-card>
+        } @if (requests.inProgress.length === 0 || requests==null) {
+        <div
+          class="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-xl"
+        >
+          لا يوجد طلبات قيد العمل حالياً
         </div>
         }
       </div>
     </div>
 
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
       <div
         class="flex items-center gap-2 px-1 py-2 border-b-2 border-green-500 mb-2"
       >
@@ -171,34 +142,20 @@
       </div>
 
       <div
-        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2"
+        class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 pb-2"
       >
         @for (req of requests.done; track req.id) {
-        <div
-          class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4 opacity-80 hover:opacity-100"
+        <app-request-card
+          [request]="req"
+          [showDescription]="true"
+          [showCategory]="true"
         >
-          <div
-            class="flex flex-col items-center justify-center bg-green-50 rounded-lg px-2 py-1 h-fit min-w-[3rem] border border-green-100"
-          >
-            <i class="pi pi-check text-green-600"></i>
-            <span class="font-bold text-sm text-green-700">{{
-              req.votes
-            }}</span>
-          </div>
-          <div class="flex flex-col gap-2 w-full">
-            <h3
-              class="font-bold text-slate-800 text-sm leading-relaxed line-through decoration-slate-300"
-            >
-              {{ req.title }}
-            </h3>
-            <div class="mt-auto pt-2">
-              <p-tag
-                value="منشور"
-                severity="success"
-                class="text-xs font-ibmArabic"
-              ></p-tag>
-            </div>
-          </div>
+        </app-request-card>
+        } @if (requests.done.length === 0) {
+        <div
+          class="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-xl"
+        >
+          لا يوجد طلبات مكتملة بعد
         </div>
         }
       </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Required for ngClass
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router'; // RouterModule for routerLink
 import {
   FormControl,

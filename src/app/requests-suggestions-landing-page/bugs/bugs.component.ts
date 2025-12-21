@@ -21,10 +21,15 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TooltipModule } from 'primeng/tooltip';
-
+import { ToastModule } from 'primeng/toast';
+import { RequestService } from '../../services/request.service';
+import { MessageService } from 'primeng/api';
+import { CategoryService } from '../../services/category.service';
 // Validators
 import { fileValidators } from '../../shared/validators/file.validators';
 import { noWhitespaceValidator } from '../../shared/validators/common.validator';
+import { Category, RequestType } from '../../shared/models/request.model';
+import { RequestCardComponent } from '../../request-card/request-card.component';
 
 @Component({
   selector: 'app-bugs',
@@ -43,9 +48,12 @@ import { noWhitespaceValidator } from '../../shared/validators/common.validator'
     SelectButtonModule,
     TagModule,
     TooltipModule,
+    ToastModule,
+    RequestCardComponent,
   ],
   templateUrl: './bugs.component.html',
   styleUrl: './bugs.component.css',
+  providers: [RequestService, MessageService],
 })
 export class BugsComponent implements OnInit {
   submitted = signal<boolean>(false);
@@ -53,22 +61,15 @@ export class BugsComponent implements OnInit {
   // Search & Sort Signals
   searchQuery = signal('');
   currentSort = signal<'newest' | 'mostVoted'>('newest');
+  requests = signal<any[]>([]);
 
   sortOptions = [
     { label: 'الأحدث', value: 'newest' },
     { label: 'الأكثر تصويتاً', value: 'mostVoted' },
   ];
 
-  // 1. Bug Specific Categories
-  categories = [
-    { label: 'خطأ وظيفي (Functional)', value: 'functional' },
-    { label: 'خطأ في العرض (Visual)', value: 'visual' },
-    { label: 'مشكلة في الأداء (Performance)', value: 'performance' },
-    { label: 'مشكلة أمنية (Security)', value: 'security' },
-    { label: 'غير ذلك', value: 'other' },
-  ];
-
-  filteredCategories: any[] = [];
+  categories: Category[] = [];
+  filteredCategories: Category[] = [];
 
   form = new FormGroup({
     title: new FormControl('', [Validators.required, noWhitespaceValidator()]),
@@ -76,11 +77,17 @@ export class BugsComponent implements OnInit {
       Validators.required,
       noWhitespaceValidator(),
     ]),
-    category: new FormControl<any>(this.categories[0], [Validators.required]),
+    category: new FormControl<any>(null, [Validators.required]),
     files: new FormControl<FileList | null>(null, [
       fileValidators(5, 20, ['image/png', 'image/jpeg', 'video/mp4']),
     ]),
   });
+
+  constructor(
+    private requestService: RequestService,
+    private messageService: MessageService,
+    private categoryService: CategoryService
+  ) {}
 
   ngOnInit() {
     // Smart Search: Filters the list while user types the bug title
@@ -92,12 +99,26 @@ export class BugsComponent implements OnInit {
         this.searchQuery.set('');
       }
     });
+
+    this.categoryService.getBugCategories().subscribe({
+      next: (data) => {
+        this.categories = data;
+      },
+      error: (err) => console.error('Failed to load categories', err),
+    });
+
+    this.requestService.getBugRequests().subscribe({
+      next: (data) => {
+        this.requests.set(data);
+      },
+      error: (err) => console.error(err),
+    });
   }
 
   searchCategory(event: any) {
     const query = event.query.toLowerCase();
     this.filteredCategories = this.categories.filter((item) =>
-      item.label.toLowerCase().includes(query)
+      item.name.toLowerCase().includes(query)
     );
   }
 
@@ -116,12 +137,39 @@ export class BugsComponent implements OnInit {
   onSubmit() {
     this.submitted.set(true);
     if (this.form.valid) {
-      const rawValue = this.form.getRawValue();
-      const payload = {
-        ...rawValue,
-        category: rawValue.category?.value,
+      const formValue = this.form.getRawValue();
+      const categoryId = formValue.category || 0;
+      // 2. Call Service
+      const requestData = {
+        title: formValue.title,
+        description: formValue.description,
+        category: categoryId,
+        type: RequestType.Bug, // Adjust as needed
       };
-      console.log('Bug Report Submitted:', payload);
+
+      // 3. Send
+      this.requestService
+        .createRequest(requestData, this.filesArray)
+        .subscribe({
+          next: (res) => {
+            // 3. Trigger Success Message
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإرسال',
+              detail: 'تم استلام اقتراحك بنجاح وسنراجعه قريباً',
+              life: 3000, // Disappears after 3s
+            });
+            this.reset(); // Clear form
+          },
+          error: (err) => {
+            // 4. Trigger Error Message
+            this.messageService.add({
+              severity: 'error',
+              summary: 'خطأ',
+              detail: 'حدث خطأ أثناء إرسال البيانات، يرجى المحاولة لاحقاً',
+            });
+          },
+        });
       this.searchQuery.set('');
     } else {
       this.form.markAllAsTouched();
@@ -134,57 +182,9 @@ export class BugsComponent implements OnInit {
     this.searchQuery.set('');
   }
 
-  // Bug Severity Helper (Optional visual cue)
-  getCategorySeverity(
-    category: string
-  ):
-    | 'success'
-    | 'info'
-    | 'warn'
-    | 'danger'
-    | 'secondary'
-    | 'contrast'
-    | undefined {
-    switch (category) {
-      case 'security':
-        return 'danger';
-      case 'functional':
-        return 'warn';
-      case 'performance':
-        return 'info';
-      default:
-        return 'secondary';
-    }
-  }
-
-  // --- List Logic ---
-  allProducts = signal<any[]>([
-    {
-      votesCount: '42',
-      requestTitle: 'فشل تسجيل الدخول عند استخدام متصفح Safari',
-      createdAt: new Date('2024-06-15'),
-      requestType: 'إبلاغ عن خطأ',
-      category: 'functional',
-    },
-    {
-      votesCount: '15',
-      requestTitle: 'الزر "حفظ" يختفي في شاشات الموبايل الصغيرة',
-      createdAt: new Date('2024-06-14'),
-      requestType: 'إبلاغ عن خطأ',
-      category: 'visual',
-    },
-    {
-      votesCount: '8',
-      requestTitle: 'بطء شديد عند تحميل ملفات Excel الكبيرة',
-      createdAt: new Date('2024-06-13'),
-      requestType: 'إبلاغ عن خطأ',
-      category: 'performance',
-    },
-  ]);
-
-  displayedProducts = computed(() => {
+  displayedRequests = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    let filtered = this.allProducts();
+    let filtered = this.requests();
 
     if (query) {
       filtered = filtered.filter((product) =>

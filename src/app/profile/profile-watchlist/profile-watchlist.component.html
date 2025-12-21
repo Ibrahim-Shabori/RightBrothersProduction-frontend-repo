@@ -1,0 +1,49 @@
+@if (isLoading()) {
+<div
+  class="flex flex-col items-center justify-center py-12 gap-3 min-h-[300px]"
+>
+  <i class="pi pi-spin pi-spinner text-4xl text-primary-500"></i>
+  <span class="text-slate-400 font-bold text-sm font-ibmArabic"
+    >جاري تحميل متابعاتك...</span
+  >
+</div>
+} @else { @if (votedRequests().length > 0) {
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fadein">
+  @for (req of votedRequests(); track req.id) {
+  <app-request-card
+    [request]="req"
+    [showStatus]="true"
+    [showCategory]="true"
+    [showDescription]="true"
+  >
+  </app-request-card>
+  }
+</div>
+} @else {
+<div
+  class="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 min-h-[300px]"
+>
+  <div
+    class="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 text-slate-300 shadow-sm"
+  >
+    <i class="pi pi-heart text-3xl"></i>
+  </div>
+
+  <h3 class="text-slate-700 font-bold text-lg font-ibmArabic mb-1">
+    قائمة المتابعة فارغة
+  </h3>
+  <p class="text-slate-400 text-sm max-w-xs font-ibmArabic mb-6">
+    لم تقم بالتصويت على أي طلبات بعد. تصفح الطلبات وادعم الأفكار التي تعجبك.
+  </p>
+
+  <p-button
+    label="تصفح الطلبات"
+    icon="pi pi-search"
+    [rounded]="true"
+    severity="secondary"
+    [routerLink]="['/requests']"
+    styleClass="font-ibmArabic font-bold px-6"
+  >
+  </p-button>
+</div>
+} }

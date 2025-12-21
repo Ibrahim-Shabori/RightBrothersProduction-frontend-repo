@@ -10,6 +10,8 @@ import {
 import { transformToNumber } from 'primeng/utils';
 import { debounceTime } from 'rxjs';
 
+import { RequestCardComponent } from '../../request-card/request-card.component';
+
 // PrimeNG Imports
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -20,7 +22,11 @@ import { InputIconModule } from 'primeng/inputicon';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TagModule } from 'primeng/tag';
 import { AutoCompleteModule } from 'primeng/autocomplete'; // 👈 NEW
-
+import { ToastModule } from 'primeng/toast';
+import { RequestService } from '../../services/request.service';
+import { MessageService } from 'primeng/api';
+import { CategoryService } from '../../services/category.service';
+import { Category, RequestType } from '../../shared/models/request.model';
 // Validators
 import { fileValidators } from '../../shared/validators/file.validators';
 import { noWhitespaceValidator } from '../../shared/validators/common.validator';
@@ -29,23 +35,31 @@ import { noWhitespaceValidator } from '../../shared/validators/common.validator'
   selector: 'app-features',
   standalone: true,
   imports: [
+    RequestCardComponent,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
     InputTextModule,
+    ToastModule,
     TextareaModule,
     FloatLabelModule,
-    AutoCompleteModule, // 👈 ADDED
+    AutoCompleteModule,
     ButtonModule,
     IconFieldModule,
     InputIconModule,
     SelectButtonModule,
     TagModule,
   ],
+  providers: [RequestService, MessageService],
   templateUrl: './features.component.html',
   styleUrl: './features.component.css',
 })
 export class FeaturesComponent implements OnInit {
+  constructor(
+    private requestService: RequestService,
+    private messageService: MessageService,
+    private categoryService: CategoryService
+  ) {}
   submitted = signal<boolean>(false);
 
   searchQuery = signal('');
@@ -57,14 +71,10 @@ export class FeaturesComponent implements OnInit {
   ];
 
   // 1. Define Categories Object
-  categories = [
-    { label: 'تحسين واجهة المستخدم', value: 'ui' },
-    { label: 'تحسين تجربة المستخدم', value: 'ux' },
-    { label: 'تحسينات أخرى', value: 'enhancement' },
-  ];
-
-  // 2. Holds the results for AutoComplete
-  filteredCategories: any[] = [];
+  // 1. Change type to your real Interface
+  categories: Category[] = [];
+  filteredCategories: Category[] = [];
+  requests = signal<any[]>([]);
 
   form = new FormGroup({
     title: new FormControl('', [Validators.required, noWhitespaceValidator()]),
@@ -72,8 +82,7 @@ export class FeaturesComponent implements OnInit {
       Validators.required,
       noWhitespaceValidator(),
     ]),
-    // 3. Initialize with the OBJECT, not string 'ui'
-    category: new FormControl<any>(this.categories[0], [Validators.required]),
+    category: new FormControl<any>(null, [Validators.required]),
     files: new FormControl<FileList | null>(null, [
       fileValidators(5, 20, ['image/png', 'image/jpeg', 'video/mp4']),
     ]),
@@ -88,13 +97,26 @@ export class FeaturesComponent implements OnInit {
         this.searchQuery.set('');
       }
     });
+
+    this.categoryService.getFeatureCategories().subscribe({
+      next: (data) => {
+        this.categories = data;
+      },
+      error: (err) => console.error('Failed to load categories', err),
+    });
+
+    this.requestService.getFeatureRequests().subscribe({
+      next: (data) => {
+        this.requests.set(data);
+      },
+      error: (err) => console.error(err),
+    });
   }
 
-  // 4. Filter Logic for AutoComplete
   searchCategory(event: any) {
     const query = event.query.toLowerCase();
     this.filteredCategories = this.categories.filter((item) =>
-      item.label.toLowerCase().includes(query)
+      item.name.toLowerCase().includes(query)
     );
   }
 
@@ -112,16 +134,44 @@ export class FeaturesComponent implements OnInit {
 
   onSubmit() {
     this.submitted.set(true);
+
     if (this.form.valid) {
-      // 5. Extract the Value for backend (since form holds object now)
-      const rawValue = this.form.getRawValue();
-      const payload = {
-        ...rawValue,
-        category: rawValue.category?.value, // Get 'ui' from {label:..., value: 'ui'}
+      // 1. Prepare Data
+      const formValue = this.form.getRawValue();
+
+      const categoryId = formValue.category || 0;
+
+      // 2. Call Service
+      const requestData = {
+        title: formValue.title,
+        description: formValue.description,
+        category: categoryId,
+        type: RequestType.Regular, // Adjust as needed
       };
 
-      console.log('Form Submitted Payload:', payload);
-      this.searchQuery.set('');
+      // 3. Send
+      this.requestService
+        .createRequest(requestData, this.filesArray)
+        .subscribe({
+          next: (res) => {
+            // 3. Trigger Success Message
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإرسال',
+              detail: 'تم استلام اقتراحك بنجاح وسنراجعه قريباً',
+              life: 3000, // Disappears after 3s
+            });
+            this.reset(); // Clear form
+          },
+          error: (err) => {
+            // 4. Trigger Error Message
+            this.messageService.add({
+              severity: 'error',
+              summary: 'خطأ',
+              detail: 'حدث خطأ أثناء إرسال البيانات، يرجى المحاولة لاحقاً',
+            });
+          },
+        });
     } else {
       this.form.markAllAsTouched();
     }
@@ -129,43 +179,19 @@ export class FeaturesComponent implements OnInit {
 
   reset() {
     this.submitted.set(false);
-    // 6. Reset to the first category object
-    this.form.reset({ category: this.categories[0] });
+    this.form.reset({ category: null });
     this.searchQuery.set('');
   }
 
-  // --- List Logic ---
-  allProducts = signal<any[]>([
-    {
-      votesCount: '345',
-      requestTitle: 'إضافة الوضع الليلي للنظام كاملاً',
-      createdAt: new Date('2024-06-10'),
-      requestType: 'اقتراح إضافة',
-      category: 'ui',
-    },
-    {
-      votesCount: '123',
-      requestTitle: 'تحسين سرعة تصدير التقارير PDF',
-      createdAt: new Date('2024-06-12'),
-      requestType: 'إبلاغ عن خطأ',
-      category: 'enhancement',
-    },
-    {
-      votesCount: '567',
-      requestTitle: 'سماح للمستخدمين بتغيير الصورة الشخصية',
-      createdAt: new Date('2024-06-11'),
-      requestType: 'اقتراح إضافة',
-      category: 'ux',
-    },
-  ]);
-
-  displayedProducts = computed(() => {
+  displayedRequests = computed(() => {
+    console.log('Filtered Requests:');
     const query = this.searchQuery().toLowerCase().trim();
-    let filtered = this.allProducts();
+    let filtered = this.requests();
+    console.log('Filtered Requests:', filtered);
 
-    if (query) {
-      filtered = filtered.filter((product) =>
-        product.requestTitle?.toLowerCase().includes(query)
+    if (query !== '') {
+      filtered = filtered.filter((request) =>
+        request.title?.toLowerCase().includes(query)
       );
     }
 

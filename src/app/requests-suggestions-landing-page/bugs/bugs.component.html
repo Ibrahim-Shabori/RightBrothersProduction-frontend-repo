@@ -70,7 +70,8 @@
               formControlName="category"
               [suggestions]="filteredCategories"
               (completeMethod)="searchCategory($event)"
-              field="label"
+              optionLabel="name"
+              optionValue="id"
               [dropdown]="true"
               [forceSelection]="true"
               scrollHeight="200px"
@@ -172,65 +173,29 @@
         [(ngModel)]="currentSort"
         optionLabel="label"
         optionValue="value"
-        [unselectable]="false"
+        [unselectable]="true"
       />
     </div>
 
-    <div class="flex flex-col gap-4">
-      @for(req of displayedProducts(); track req.requestTitle){
-
-      <div
-        class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex gap-4 md:gap-6 group"
+    <div
+      class="flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 pb-2"
+    >
+      @for (req of displayedRequests(); track req.id) {
+      <app-request-card
+        [request]="req"
+        [showDescription]="true"
+        [showCategory]="true"
       >
-        <div
-          class="flex flex-col items-center justify-center bg-slate-50 rounded-lg px-2 py-2 h-fit min-w-[3.5rem] border border-slate-100 group-hover:border-red-200 cursor-pointer hover:bg-red-50 transition-colors"
-        >
-          <i
-            class="pi pi-chevron-up text-slate-400 group-hover:text-red-600 mb-1"
-          ></i>
-          <span
-            class="font-bold text-lg text-slate-700 group-hover:text-red-700 leading-none"
-            >{{ req.votesCount }}</span
-          >
-        </div>
-
-        <div class="flex flex-col gap-2 flex-grow min-w-0">
-          <div class="flex justify-between items-start gap-4">
-            <h3
-              class="font-bold text-slate-800 text-lg leading-snug break-words"
-            >
-              {{ req.requestTitle }}
-            </h3>
-            <p-tag
-              [value]="req.category"
-              [severity]="getCategorySeverity(req.category)"
-              styleClass="uppercase text-xs"
-            ></p-tag>
-          </div>
-
-          <div
-            class="flex items-center gap-4 text-sm text-slate-500 mt-auto pt-2"
-          >
-            <span class="flex items-center gap-1">
-              <i class="pi pi-clock text-xs"></i>
-              {{ req.createdAt | date : "shortDate" }}
-            </span>
-            <span class="flex items-center gap-1 text-red-600 font-medium">
-              <i class="pi pi-exclamation-circle text-xs"></i>
-              {{ req.requestType }}
-            </span>
-          </div>
-        </div>
-      </div>
-      } @if(displayedProducts().length === 0){
+      </app-request-card>
+      } @if (displayedRequests().length === 0) {
       <div
-        class="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300"
+        class="text-center py-8 text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-xl"
       >
-        <i class="pi pi-check-circle text-4xl text-green-500 mb-4 block"></i>
-        <p class="text-slate-500 font-bold">رائع! لا توجد أخطاء مطابقة.</p>
-        <p class="text-slate-400 text-sm">أو كن أول من يبلغ عن هذا الخطأ.</p>
+        <i class="pi pi-search text-4xl text-slate-300 mb-4 block"></i>
+        <p class="text-slate-500 font-bold">لا توجد أخطاء مطابقة</p>
       </div>
       }
     </div>
   </div>
 </div>
+<p-toast position="bottom-left" dir="rtl"></p-toast>

@@ -1,0 +1,221 @@
+<p-toast position="bottom-left" styleClass="font-ibmArabic"></p-toast>
+
+@if (isLoading()) {
+<div
+  class="flex flex-col items-center justify-center py-12 gap-3 min-h-[300px]"
+>
+  <i class="pi pi-spin pi-spinner text-4xl text-primary-500"></i>
+  <span class="text-slate-400 font-bold text-sm font-ibmArabic"
+    >جاري تحميل الإعدادات...</span
+  >
+</div>
+} @else {
+<div class="max-w-3xl mx-auto pt-2 animate-fadein font-ibmArabic">
+  <form
+    [formGroup]="settingsForm"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-8"
+  >
+    <div class="flex flex-col gap-4 border-b border-slate-100 pb-6">
+      <div class="flex flex-col gap-1">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="pi pi-camera text-primary-600"></i>
+          الصورة الشخصية
+        </h3>
+        <p class="text-slate-400 text-sm">
+          تدعم الملفات بصيغة JPG, PNG, WEBP (بحد أقصى 2 ميجابايت).
+        </p>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <input
+          #fileInput
+          type="file"
+          class="hidden"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+        />
+
+        <p-button
+          label="رفع صورة جديدة"
+          icon="pi pi-upload"
+          [outlined]="true"
+          severity="secondary"
+          (onClick)="fileInput.click()"
+          styleClass="font-ibmArabic font-bold"
+        >
+        </p-button>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-1">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="pi pi-user text-primary-600"></i>
+          البيانات الشخصية
+        </h3>
+        <p class="text-slate-400 text-sm">قم بتحديث اسمك ومعلومات التواصل.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <label for="fullName" class="font-bold text-slate-700 text-sm"
+            >الاسم الكامل</label
+          >
+          <input
+            pInputText
+            id="fullName"
+            formControlName="fullName"
+            class="w-full"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                settingsForm.get('fullName')?.invalid &&
+                settingsForm.get('fullName')?.touched
+            }"
+          />
+          @if (settingsForm.get('fullName')?.invalid &&
+          settingsForm.get('fullName')?.touched) {
+          <small class="text-red-500 text-xs font-bold"
+            >الاسم مطلوب ويجب أن يكون 3 أحرف على الأقل.</small
+          >
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="email" class="font-bold text-slate-700 text-sm"
+            >البريد الإلكتروني</label
+          >
+          <input
+            pInputText
+            id="email"
+            formControlName="email"
+            class="w-full bg-slate-100 text-slate-500 cursor-not-allowed focus:ring-0 focus:border-slate-300"
+          />
+          <small class="text-slate-400 text-xs flex items-center gap-1">
+            <i class="pi pi-lock text-[10px]"></i>
+            لا يمكن تغيير البريد الإلكتروني.
+          </small>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="phoneNumber" class="font-bold text-slate-700 text-sm"
+            >رقم الهاتف (اختياري)</label
+          >
+          <input
+            pInputText
+            id="phoneNumber"
+            formControlName="phoneNumber"
+            placeholder="01xxxxxxxxx"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 mt-2">
+        <label for="bio" class="font-bold text-slate-700 text-sm"
+          >نبذة عنك</label
+        >
+        <textarea
+          pTextarea
+          id="bio"
+          formControlName="bio"
+          rows="4"
+          class="w-full"
+          placeholder="أكتب نبذة قصيرة عنك، خبراتك، أو اهتماماتك التقنية..."
+          [autoResize]="true"
+        >
+        </textarea>
+        <div class="flex justify-between text-xs text-slate-400">
+          <span>يظهر هذا النص في ملفك الشخصي للعامة.</span>
+          <span>{{ settingsForm.get("bio")?.value?.length || 0 }}/500</span>
+        </div>
+        @if (settingsForm.get('bio')?.hasError('maxlength')) {
+        <small class="text-red-500 text-xs font-bold"
+          >النص طويل جداً (الحد الأقصى 500 حرف).</small
+        >
+        }
+      </div>
+    </div>
+
+    <p-divider styleClass="my-0"></p-divider>
+
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-1">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="pi pi-shield text-primary-600"></i>
+          الأمان وكلمة المرور
+        </h3>
+        <p class="text-slate-400 text-sm">
+          اترك هذه الحقول فارغة إذا كنت لا تريد تغيير كلمة المرور.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <label for="currentPassword" class="font-bold text-slate-700 text-sm"
+            >كلمة المرور الحالية</label
+          >
+          <p-password
+            id="currentPassword"
+            formControlName="currentPassword"
+            [toggleMask]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            [feedback]="false"
+            placeholder="••••••••"
+          >
+          </p-password>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="newPassword" class="font-bold text-slate-700 text-sm"
+            >كلمة المرور الجديدة</label
+          >
+          <p-password
+            id="newPassword"
+            formControlName="newPassword"
+            [toggleMask]="true"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            promptLabel="أدخل كلمة مرور قوية"
+            weakLabel="ضعيفة"
+            mediumLabel="متوسطة"
+            strongLabel="قوية"
+          >
+          </p-password>
+          @if (settingsForm.get('newPassword')?.hasError('minlength') &&
+          settingsForm.get('newPassword')?.touched) {
+          <small class="text-red-500 text-xs font-bold"
+            >يجب أن تكون كلمة المرور 8 أحرف على الأقل.</small
+          >
+          }
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-slate-100"
+    >
+      <p-button
+        label="إلغاء التغييرات"
+        severity="secondary"
+        [text]="true"
+        type="button"
+        (onClick)="loadUserData()"
+        styleClass="font-ibmArabic font-bold"
+      >
+      </p-button>
+
+      <p-button
+        label="حفظ التغييرات"
+        icon="pi pi-check"
+        [loading]="isSaving()"
+        type="submit"
+        [rounded]="true"
+        styleClass="font-ibmArabic font-bold px-6"
+      >
+      </p-button>
+    </div>
+  </form>
+</div>
+}

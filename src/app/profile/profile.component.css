@@ -1,0 +1,26 @@
+/* Remove default background from the tab list container */
+:host ::ng-deep .p-tablist {
+    border-bottom: 1px solid #e2e8f0; /* slate-200 */
+    background: transparent;
+}
+
+/* Style the individual tab */
+:host ::ng-deep .p-tab {
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    color: #64748b; /* slate-500 */
+    outline: none;
+}
+
+/* Hover State */
+:host ::ng-deep .p-tab:hover {
+    color: #334155; /* slate-700 */
+    border-color: #cbd5e1; /* slate-300 */
+}
+
+/* Active State (When value matches) */
+:host ::ng-deep .p-tab-active {
+    color: #2563eb !important; /* primary-600 */
+    border-bottom-color: #2563eb !important;
+}

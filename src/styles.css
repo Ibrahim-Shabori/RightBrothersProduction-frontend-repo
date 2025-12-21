@@ -45,3 +45,9 @@ body {
   );
   background-size: 32px 32px;
 }
+
+/* 3. If you really want the background RED all the time (not just hover): */
+/* .logout-item .p-menuitem-link {
+    background-color: #fca5a5 !important; 
+    border-radius: 6px; 
+} */

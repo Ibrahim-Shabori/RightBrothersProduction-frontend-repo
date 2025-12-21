@@ -15,7 +15,7 @@ import { PasswordModule } from 'primeng/password';
 import { FloatLabelModule } from 'primeng/floatlabel';
 
 // Services & Validators
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../services/auth.service';
 import {
   matchPasswordValidator,
   passwordValidator,
