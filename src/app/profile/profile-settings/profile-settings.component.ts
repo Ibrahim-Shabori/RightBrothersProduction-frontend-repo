@@ -130,7 +130,7 @@ export class ProfileSettingsComponent implements OnInit {
     // Construct DTO
     const dto: UpdateProfileDto = {
         fullName: formValues.fullName!,
-        phoneNumber: formValues.phoneNumber!,
+        phoneNumber: (formValues.phoneNumber == null || formValues.phoneNumber === '') ? null : formValues.phoneNumber,
         bio: formValues.bio || '',
         // Only include passwords if the user is trying to change them
         ...(formValues.newPassword ? {

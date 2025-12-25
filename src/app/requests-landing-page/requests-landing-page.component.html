@@ -48,7 +48,7 @@
         [showClear]="true"
         appendTo="body"
         placeholder="اختر النوع"
-        class="w-full sm:w-64 z-50"
+        class="w-full sm:w-64 z-40"
         [pt]="{
           root: { class: 'border-slate-200 shadow-sm' },
           label: { class: 'text-sm font-bold text-slate-600' }
@@ -83,6 +83,7 @@
           [request]="req"
           [showDescription]="true"
           [showCategory]="true"
+          (vote)="handleVote($event)"
         >
         </app-request-card>
         } @if (requests.review.length === 0) {
@@ -116,6 +117,7 @@
           [request]="req"
           [showDescription]="true"
           [showCategory]="true"
+          (vote)="handleVote($event)"
         >
         </app-request-card>
         } @if (requests.inProgress.length === 0 || requests==null) {
@@ -149,6 +151,7 @@
           [request]="req"
           [showDescription]="true"
           [showCategory]="true"
+          (vote)="handleVote($event)"
         >
         </app-request-card>
         } @if (requests.done.length === 0) {

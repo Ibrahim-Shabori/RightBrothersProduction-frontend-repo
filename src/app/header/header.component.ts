@@ -46,7 +46,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     public auth: AuthService,
-    public profileService: ProfileService, // 👈 Inject Profile Service
+    public profileService: ProfileService,
     private router: Router
   ) {}
 

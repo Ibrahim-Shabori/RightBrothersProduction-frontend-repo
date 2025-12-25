@@ -35,5 +35,7 @@ export interface RequestResponseDto {
   categoryName: string;
   createdByName?: string;
 
+  isVotedByCurrentUser: boolean;
+
   isDetailed?: boolean;
 }

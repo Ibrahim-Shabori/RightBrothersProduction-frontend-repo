@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   RequestResponseDto,
@@ -26,6 +26,8 @@ export class RequestCardComponent {
   @Input() showCategory: boolean = true;
   @Input() clickable: boolean = true;
 
+  @Output() vote = new EventEmitter<RequestResponseDto>();
+
   // Enums for template usage
   RequestType = RequestType;
   RequestStatus = RequestStatus;
@@ -33,7 +35,10 @@ export class RequestCardComponent {
   // --- Helpers ---
 
   get isBug(): boolean {
-    return this.request.type === RequestType.Bug;
+    return (
+      this.request.type === RequestType.Bug ||
+      this.request.type === RequestType.DetailedBug
+    );
   }
 
   // Status Dot Color
@@ -75,5 +80,38 @@ export class RequestCardComponent {
 
   get typeColorClass(): string {
     return this.isBug ? 'text-red-600' : 'text-primary-600';
+  }
+
+  get getVoteBoxBackgroundClass(): string {
+    if (this.request.isVotedByCurrentUser) {
+      return this.isBug
+        ? 'border-red-200 bg-red-50 text-red-600'
+        : 'border-primary-200 bg-primary-50 text-primary-600';
+    } else {
+      return 'bg-slate-50 border-slate-100';
+    }
+  }
+
+  get getIconColorClass(): string {
+    if (this.request.isVotedByCurrentUser) {
+      return this.isBug ? 'text-red-600' : 'text-primary-600';
+    } else {
+      return 'text-slate-400';
+    }
+  }
+
+  get getCountColorClass(): string {
+    if (this.request.isVotedByCurrentUser) {
+      return this.isBug ? 'text-red-700' : 'text-primary-700';
+    } else {
+      return 'text-slate-700';
+    }
+  }
+
+  onVoteClick() {
+    if (this.request && this.request.id) {
+      this.vote.emit(this.request);
+      console.log(this.request.isVotedByCurrentUser);
+    }
   }
 }

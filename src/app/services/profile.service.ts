@@ -21,10 +21,15 @@ export interface UserProfileDto {
 // 2. DTO for Updating (Matches Backend Update DTO)
 export interface UpdateProfileDto {
   fullName: string;
-  phoneNumber?: string;
-  bio?: string; // 👈 Added Bio here
+  phoneNumber: string | null;
+  bio?: string;
   currentPassword?: string;
   newPassword?: string;
+}
+
+export interface UserContactInfoDto {
+  email: string;
+  phoneNumber?: string;
 }
 
 @Injectable({
@@ -71,6 +76,10 @@ export class ProfileService {
         dateJoined: new Date(profile.dateJoined),
       }))
     );
+  }
+
+  getUserContactInfo(): Observable<UserContactInfoDto> {
+    return this.http.get<UserContactInfoDto>(`${this.apiUrl}/contact`);
   }
 
   // ==========================================================
