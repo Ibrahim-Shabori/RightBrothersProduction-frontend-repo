@@ -145,7 +145,6 @@ export class ProfileService {
     }
 
     // Append your backend static files path (wwwroot)
-    console.log('Constructing profile picture URL for:', fileName);
     return `${environment.baseUrl}/uploads/profiles/${fileName}`;
   }
 }

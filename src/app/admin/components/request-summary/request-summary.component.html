@@ -1,0 +1,28 @@
+<div class="flex flex-col gap-2" dir="rtl">
+  <div class="flex items-center gap-2 flex-wrap">
+    <span
+      class="font-bold text-lg cursor-pointer hover:underline"
+      [ngClass]="titleColorClass"
+      [pTooltip]="request.title.length > 50 ? request.title : ''"
+      tooltipPosition="top"
+    >
+      {{ request.title }}
+    </span>
+
+    <p-tag
+      *ngIf="request.isDetailed"
+      value="مفصل"
+      severity="warn"
+      [rounded]="true"
+      styleClass="text-xs px-2 py-0 h-2rem"
+    >
+    </p-tag>
+  </div>
+
+  <div class="flex items-center gap-2 text-sm text-600">
+    <div class="flex items-center gap-1">
+      <i class="pi pi-user text-xs"></i>
+      <span>{{ shortAuthorName }}</span>
+    </div>
+  </div>
+</div>

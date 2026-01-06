@@ -1,0 +1,164 @@
+<div class="animate-fadein p-4 md:p-6 min-h-screen bg-slate-50/50">
+  <p-toast position="bottom-right"></p-toast>
+  <div
+    class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4"
+  >
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+        قائمة الطلبات
+      </h1>
+      <p class="text-slate-500 text-sm mt-1">
+        قم بمراجعة الطلبات المنشورة، تحديثها، أو اتخاذ قرارات سريعة بشأنها.
+      </p>
+    </div>
+
+    <div class="flex gap-3">
+      <span class="p-input-icon-left w-full md:w-64">
+        <input
+          pInputText
+          type="text"
+          placeholder="بحث في الطلبات..."
+          class="w-full"
+          [(ngModel)]="queryParams.filter"
+          (keydown.enter)="loadRequests({ first: 0, rows: 10 })"
+        />
+      </span>
+    </div>
+  </div>
+
+  <p-table
+    #dt
+    [value]="requests"
+    [lazy]="true"
+    (onLazyLoad)="loadRequests($event)"
+    dataKey="id"
+    [totalRecords]="totalRecords"
+    [loading]="loading"
+    [expandedRowKeys]="expandedRows"
+    [rows]="pagination?.PageSize"
+    [paginator]="true"
+    [rowHover]="true"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} طلب"
+    responsiveLayout="scroll"
+    stateStorage="session"
+    stateKey="review-queue-table"
+    breakpoint="960px"
+    styleClass="p-datatable-gridlines p-datatable-sm"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"></th>
+        <th pSortableColumn="votes" style="width: 100px">
+          الأصوات <p-sortIcon field="votes"></p-sortIcon>
+        </th>
+        <th pSortableColumn="trend" style="width: 100px">
+          التريند <p-sortIcon field="trend"></p-sortIcon>
+        </th>
+        <th>تفاصيل الطلب</th>
+        <th style="width: 100px">الحالة الحالية</th>
+        <th pSortableColumn="updatedAt">
+          آخر تحديث <p-sortIcon field="updatedAt"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-request let-expanded="expanded">
+      <tr>
+        <td>
+          <button
+            type="button"
+            pButton
+            pRipple
+            [pRowToggler]="request"
+            class="p-button-text p-button-rounded p-button-plain"
+            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-left'"
+          ></button>
+        </td>
+
+        <td class="text-center">
+          <div class="flex flex-col items-center">
+            <span class="text-xl font-bold text-primary">{{
+              request.votesCount
+            }}</span>
+            <span class="text-xs text-500">صوت</span>
+          </div>
+        </td>
+
+        <td>
+          <app-trend-indicator
+            [value]="request.trendsCount"
+            [period]="queryParams.period"
+          >
+          </app-trend-indicator>
+        </td>
+
+        <td>
+          <app-request-summary [request]="request"></app-request-summary>
+        </td>
+
+        <td>
+          <p-select
+            [options]="statusOptions"
+            [ngModel]="request.status"
+            (onChange)="onStatusChange(request, $event.value)"
+            appendTo="body"
+            [style]="{ width: '160px' }"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="اختر الحالة"
+          >
+            <ng-template pTemplate="selectedItem" let-selectedOption>
+              <div class="flex items-center gap-2" *ngIf="selectedOption">
+                <p-tag
+                  [value]="selectedOption.label"
+                  [severity]="getSeverity(selectedOption.value)"
+                >
+                </p-tag>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="item" let-option>
+              <div class="flex items-center gap-2">
+                <p-tag
+                  [value]="option.label"
+                  [severity]="getSeverity(option.value)"
+                >
+                </p-tag>
+              </div>
+            </ng-template>
+          </p-select>
+        </td>
+
+        <td>
+          <span class="text-sm text-600">{{
+            request.lastUpdatedAt | date : "mediumDate"
+          }}</span>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #expandedrow let-request>
+      <tr>
+        <td colspan="5" class="p-0">
+          <app-request-detail-row
+            [request]="request"
+            [loading]="loading"
+            (onAction)="handleRowAction($event)"
+          ></app-request-detail-row>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<app-request-status-dialog
+  [(visible)]="displayStatusDialog"
+  [request]="pendingRequest"
+  [newStatus]="pendingNewStatus"
+  [statusOptions]="statusOptions"
+  [isInternal]="isInternalNote"
+  [notifyUsers]="notifyUsers"
+  [updateMessage]="updateMessage"
+  (onConfirm)="confirmStatusUpdate($event)"
+></app-request-status-dialog>

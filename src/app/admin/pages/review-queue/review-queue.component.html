@@ -1,0 +1,346 @@
+<div class="animate-fadein p-4 md:p-6 min-h-screen bg-slate-50/50">
+  <p-toast position="bottom-right"></p-toast>
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+
+  <div
+    class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4"
+  >
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+        قائمة المراجعة
+      </h1>
+      <p class="text-slate-500 text-sm mt-1">
+        قم بمراجعة الطلبات الواردة، تصنيفها، أو اتخاذ قرارات سريعة بشأنها.
+      </p>
+    </div>
+
+    <div class="flex gap-3">
+      <span class="p-input-icon-left w-full md:w-64">
+        <input
+          pInputText
+          type="text"
+          placeholder="بحث في الطلبات..."
+          class="w-full"
+          [(ngModel)]="queryParams.filter"
+          (keydown.enter)="loadRequests({ first: 0, rows: 10 })"
+        />
+      </span>
+    </div>
+  </div>
+
+  <div
+    class="card bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden"
+  >
+    <p-table
+      #dt
+      [value]="requests"
+      [lazy]="true"
+      (onLazyLoad)="loadRequests($event)"
+      [dataKey]="'id'"
+      [totalRecords]="totalRecords"
+      [loading]="loading"
+      [rows]="pagination?.PageSize"
+      [paginator]="true"
+      [rowHover]="true"
+      breakpoint="960px"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} طلب"
+      [expandedRowKeys]="expandedRows"
+      stateStorage="session"
+      stateKey="review-queue-table"
+      styleClass="p-datatable-gridlines p-datatable-sm"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem"></th>
+          <th pSortableColumn="type" style="width: 150px">
+            النوع
+            <p-sortIcon field="type"></p-sortIcon>
+            <p-columnFilter
+              field="type"
+              matchMode="in"
+              display="menu"
+              [showMatchModes]="false"
+              [showOperator]="false"
+              [showAddButton]="false"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <p-multiSelect
+                  [ngModel]="value"
+                  [options]="categories"
+                  placeholder="الكل"
+                  (onChange)="filter($event.value)"
+                  optionLabel="name"
+                  [style]="{ 'min-width': '14rem' }"
+                  appendTo="body"
+                >
+                  <ng-template pTemplate="selectedItems">
+                    @if (value && value.length > 0) {
+                    <div class="flex gap-1 flex-wrap">
+                      @for (item of value; track item) {
+                      <p-tag
+                        [value]="item.name"
+                        [style.border-color]="getCategoryColor(item)"
+                        class="mr-1 border-2"
+                        [style.background-color]="'white' + ' !important'"
+                        [style.color]="getCategoryColor(item) + ' !important'"
+                        [severity]="undefined"
+                      >
+                      </p-tag>
+                      }
+                    </div>
+                    }
+                  </ng-template>
+
+                  <ng-template pTemplate="item" let-option>
+                    <div class="flex items-center gap-2 w-full">
+                      <p-tag
+                        [value]="option.name"
+                        [rounded]="true"
+                        [style.border-color]="getCategoryColor(option)"
+                        class="w-full text-center border-2"
+                        [style.background-color]="'white' + ' !important'"
+                        [style.color]="getCategoryColor(option) + ' !important'"
+                      >
+                      </p-tag>
+                    </div>
+                  </ng-template>
+                </p-multiSelect>
+              </ng-template>
+            </p-columnFilter>
+          </th>
+          <th>تفاصيل الطلب</th>
+          <th pSortableColumn="createdAt" style="width: 200px">
+            تاريخ الإرسال <p-sortIcon field="createdAt"></p-sortIcon>
+          </th>
+          <th style="width: 180px" class="text-center">إجراءات</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-request let-expanded="expanded">
+        <tr [class.bg-slate-50]="expanded">
+          <td>
+            <button
+              type="button"
+              pButton
+              pRipple
+              [pRowToggler]="request"
+              class="p-button-text p-button-rounded p-button-plain w-8 h-8"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            ></button>
+          </td>
+
+          <td>
+            <div class="flex flex-col gap-2">
+              <p-tag
+                [value]="getRequestTypeName(request.type)"
+                [severity]="getSeverity(request.type)"
+                [rounded]="true"
+              >
+              </p-tag>
+            </div>
+          </td>
+
+          <td style="min-width: 300px">
+            <div class="relative flex flex-col gap-1 py-2 pr-8">
+              @if (request.isDetailed) {
+              <div
+                class="absolute top-0 right-0 shadow-sm flex items-center justify-center w-6 h-6 cursor-help transition-all hover:w-6 hover:h-6"
+                pTooltip="طلب مفصل"
+                tooltipPosition="left"
+              >
+                <i class="pi pi-align-justify text-sm font-bold"></i>
+              </div>
+              }
+
+              <span
+                class="font-bold text-slate-800 text-base hover:text-indigo-600 cursor-pointer transition-colors line-clamp-1"
+                (click)="viewRequestDetails(request.id)"
+              >
+                {{ request.title }}
+              </span>
+
+              <span class="text-slate-500 text-sm leading-relaxed line-clamp-2">
+                {{ request.shortDescription }}
+              </span>
+
+              <div class="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                <span
+                  class="flex items-center gap-1 text-white border border-slate-800 px-2 py-0.5 rounded-md"
+                  [style.background-color]="
+                    getCategoryColorById(request.categoryId)
+                  "
+                >
+                  <i class="pi pi-folder text-white"></i>
+                  {{ getCategoryNameById(request.categoryId) }}
+                </span>
+
+                <span class="flex items-center gap-1">
+                  <i class="pi pi-user text-slate-400"></i>
+                  {{ request.createdBy }}
+                </span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <div class="text-sm text-slate-600">
+              {{ request.createdAt | date : "yyyy/MM/dd" }}
+            </div>
+            <div class="text-xs text-slate-400 mt-0.5">
+              {{ request.createdAt | date : "shortTime" }}
+            </div>
+          </td>
+
+          <td class="text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button
+                pButton
+                icon="pi pi-check"
+                class="p-button-rounded p-button-success p-button-text w-8 h-8"
+                pTooltip="قبول"
+                tooltipPosition="top"
+                (click)="openReviewAction(request, 'approve')"
+              ></button>
+
+              <button
+                pButton
+                icon="pi pi-times"
+                class="p-button-rounded p-button-danger p-button-text w-8 h-8"
+                pTooltip="رفض"
+                tooltipPosition="top"
+                (click)="openReviewAction(request, 'reject')"
+              ></button>
+
+              <button
+                pButton
+                icon="pi pi-external-link"
+                class="p-button-rounded p-button-secondary p-button-text w-8 h-8"
+                pTooltip="التفاصيل الكاملة"
+                tooltipPosition="top"
+                (click)="viewRequestDetails(request.id)"
+              ></button>
+
+              <button
+                pButton
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-warning p-button-text w-8 h-8"
+                pTooltip="حذف"
+                tooltipPosition="top"
+                (click)="confirmDelete(request)"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #expandedrow let-request>
+        <tr>
+          <td colspan="5" class="p-0">
+            <div class="p-4 bg-slate-50 border-b border-slate-100 shadow-inner">
+              <div class="flex gap-4">
+                <div class="w-1 bg-indigo-500 rounded-full h-auto"></div>
+
+                <div class="flex-1">
+                  <h4 class="font-bold text-slate-700 mb-2 text-sm">
+                    الوصف الكامل:
+                  </h4>
+                  <p
+                    class="text-slate-600 text-sm leading-relaxed whitespace-pre-line"
+                  >
+                    {{ request.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center py-8">
+            <div
+              class="flex flex-col items-center justify-center text-slate-400"
+            >
+              <i class="pi pi-inbox text-4xl mb-2 opacity-50"></i>
+              <p>لا توجد طلبات بانتظار المراجعة حالياً</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-dialog
+    [(visible)]="displayReviewDialog"
+    [header]="currentAction === 'approve' ? 'قبول الطلب' : 'رفض الطلب'"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    [draggable]="false"
+    [resizable]="false"
+  >
+    <div class="flex flex-col gap-4 pt-2">
+      <div
+        class="bg-slate-50 p-3 rounded border border-slate-100 text-sm text-slate-600"
+      >
+        أنت بصدد
+        <span
+          [class.text-green-600]="currentAction === 'approve'"
+          [class.text-red-600]="currentAction === 'reject'"
+          class="font-bold"
+        >
+          {{ currentAction === "approve" ? "قبول" : "رفض" }}
+        </span>
+        الطلب:
+        <span class="font-bold">"{{ selectedRequest?.title }}"</span>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="reviewComment" class="font-medium text-slate-700">
+          ملاحظات إدارية (اختياري)
+        </label>
+        <textarea
+          id="reviewComment"
+          pInputTextarea
+          [(ngModel)]="reviewComment"
+          rows="3"
+          [autoResize]="true"
+          class="w-full text-sm"
+          placeholder="أضف سبباً للرفض أو ملاحظة للقبول... (سيظهر للمستخدم)"
+        >
+        </textarea>
+        <small
+          class="text-slate-400"
+          *ngIf="currentAction === 'reject' && !reviewComment"
+        >
+          * يفضل ذكر سبب الرفض لمساعدة المستخدم.
+        </small>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        label="إلغاء"
+        icon="pi pi-times"
+        class="p-button-text text-slate-500"
+        (click)="displayReviewDialog = false"
+      ></button>
+
+      <button
+        pButton
+        [label]="currentAction === 'approve' ? 'تأكيد القبول' : 'تأكيد الرفض'"
+        [icon]="currentAction === 'approve' ? 'pi pi-check' : 'pi pi-times'"
+        [class.p-button-success]="currentAction === 'approve'"
+        [class.p-button-danger]="currentAction === 'reject'"
+        [loading]="isSubmittingReview"
+        (click)="submitReview()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+</div>

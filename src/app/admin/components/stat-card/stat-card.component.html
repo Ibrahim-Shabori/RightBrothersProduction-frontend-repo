@@ -1,0 +1,33 @@
+<div
+  class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between group cursor-default"
+>
+  <div class="flex justify-between items-start mb-4">
+    <div class="flex flex-col gap-1">
+      <span class="text-slate-500 text-xs font-bold tracking-wide uppercase">{{
+        label
+      }}</span>
+      <span class="text-3xl font-extrabold text-slate-800 tracking-tight">{{
+        value
+      }}</span>
+    </div>
+
+    <div
+      [class]="iconContainerClass"
+      class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-110"
+    >
+      <i [class]="icon" class="text-xl"></i>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2 text-xs">
+    <div
+      [class]="trendColorClass"
+      class="flex items-center gap-1 font-bold bg-slate-50 px-2 py-1 rounded-md border border-slate-100"
+    >
+      <i [class]="trendIcon" class="text-[10px]"></i>
+      <span>{{ trendPercentage }}%</span>
+    </div>
+
+    <span class="text-slate-400 font-medium">{{ trendLabel }}</span>
+  </div>
+</div>

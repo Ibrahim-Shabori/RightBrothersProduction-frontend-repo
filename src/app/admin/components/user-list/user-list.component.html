@@ -1,0 +1,164 @@
+<div class="card border-none shadow-none p-0">
+  <p-table
+    #dt
+    [value]="users"
+    [lazy]="true"
+    [loading]="loading"
+    (onLazyLoad)="loadUsers($event)"
+    [dataKey]="'id'"
+    [totalRecords]="totalRecords"
+    [rows]="10"
+    [paginator]="true"
+    breakpoint="960px"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="عرض {first} إلى {last} من أصل {totalRecords} مستخدم"
+    responsiveLayout="scroll"
+    [rowHover]="true"
+    stateKey="review-queue-table"
+    styleClass="p-datatable-gridlines p-datatable-sm"
+  >
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-4 text-500">
+          لا يوجد مستخدمين يطابقون بحثك.
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>المستخدم</th>
+        <th pSortableColumn="joinDate" style="width: 15%">
+          تاريخ الانضمام <p-sortIcon field="joinDate" />
+        </th>
+        <th
+          pSortableColumn="performance"
+          class="text-center"
+          style="width: 10%"
+        >
+          التأثير (أصوات مستلمة) <p-sortIcon field="performance" />
+        </th>
+        <th style="width: 10%">الحالة</th>
+        <th style="width: 10%" pSortableColumn="lastActivity">
+          تاريخ آخر نشاط <p-sortIcon field="lastActivity" />
+        </th>
+        <th style="width: 140px">إجراءات</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user>
+      <tr [class.bg-red-50]="user.isBanned">
+        <td>
+          <div class="flex items-center gap-3">
+            @if (user.profilePictureUrl != "" && user.profilePictureUrl != null)
+            {
+            <p-avatar
+              [image]="getProfilePicturePath(user.profilePictureUrl)"
+              shape="circle"
+              size="normal"
+              styleClass="font-bold shadow-1"
+            >
+            </p-avatar>
+            } @else {
+            <p-avatar
+              [label]="getFirstChar(user.fullName)"
+              shape="circle"
+              size="normal"
+              [style]="{ 'background-color': '#3B82F6', color: '#ffffff' }"
+              styleClass="font-bold shadow-1"
+            >
+            </p-avatar>
+            }
+
+            <div class="flex flex-col gap-1">
+              <span class="font-bold text-900">{{ user.fullName }}</span>
+              <span class="text-sm text-500">{{ user.email }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <span class="text-700">{{
+            user.joinedAt | date : "mediumDate"
+          }}</span>
+        </td>
+
+        <td class="text-center">
+          <div
+            class="inline-flex items-center justify-center gap-2 px-3 py-1 text-red-400"
+          >
+            <i class="pi pi-heart-fill text-xs"></i>
+            <span class="font-bold">{{ user.performanceScore }}</span>
+          </div>
+        </td>
+
+        <td>
+          <p-tag
+            [value]="!user.isActive ? 'محظور' : 'نشط'"
+            [severity]="!user.isActive ? 'danger' : 'success'"
+            [rounded]="true"
+          >
+          </p-tag>
+        </td>
+
+        <td>
+          <span class="text-700">{{
+            user.lastActivity | date : "mediumDate"
+          }}</span>
+        </td>
+
+        <td>
+          <div class="flex gap-2">
+            <button
+              pButton
+              icon="pi pi-id-card"
+              class="p-button-text p-button-sm p-button-secondary"
+              pTooltip="ملف المستخدم"
+              tooltipPosition="top"
+            ></button>
+
+            <button
+              *ngIf="isSuperAdmin && user.isActive"
+              pButton
+              icon="pi pi-arrow-up"
+              class="p-button-text p-button-sm p-button-success"
+              pTooltip="ترقية لمشرف"
+              tooltipPosition="top"
+              (click)="openPromoteDialog(user)"
+            ></button>
+
+            <button
+              *ngIf="user.isActive"
+              pButton
+              icon="pi pi-ban"
+              class="p-button-text p-button-sm p-button-danger"
+              pTooltip="حظر"
+              tooltipPosition="top"
+              (click)="openBanDialog(user)"
+            ></button>
+
+            <button
+              *ngIf="!user.isActive"
+              pButton
+              icon="pi pi-refresh"
+              class="p-button-text p-button-sm p-button-warning"
+              pTooltip="إلغاء الحظر"
+              tooltipPosition="top"
+              (click)="openUnBanDialog(user)"
+            ></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-user-action-dialog
+    [(visible)]="displayDialog"
+    [user]="selectedUser"
+    [action]="dialogAction"
+    (onConfirm)="handleDialogConfirm()"
+  >
+  </app-user-action-dialog>
+
+  <p-toast position="top-left"></p-toast>
+</div>

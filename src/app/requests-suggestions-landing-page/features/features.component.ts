@@ -1,3 +1,4 @@
+import { AuthService } from './../../services/auth.service';
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -65,7 +66,8 @@ export class FeaturesComponent implements OnInit {
     private messageService: MessageService,
     private voteService: VoteService,
     private categoryService: CategoryService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private authService: AuthService
   ) {
     effect(() => {
       // This runs automatically whenever userEmail() or userPhoneNumber() changes
@@ -87,6 +89,7 @@ export class FeaturesComponent implements OnInit {
   // --- State Signals ---
   isDetailedMode = signal<boolean>(false);
   submitted = signal<boolean>(false);
+  authStatus = signal<boolean>(false);
 
   // --- File Upload State ---
   filesArray: File[] = [];
@@ -138,13 +141,20 @@ export class FeaturesComponent implements OnInit {
   });
 
   ngOnInit() {
-    // Load user contact info to prefill email/phone in detailed form
-    this.profileService.getUserContactInfo().subscribe({
-      next: (info) => {
-        this.userEmail.set(info.email);
-        this.userPhoneNumber.set(info.phoneNumber || '');
-      },
+    this.authService.authStatus$.subscribe((val) => {
+      this.authStatus.set(val);
     });
+
+    // Load user contact info to prefill email/phone in detailed form
+    if (this.authStatus() == true) {
+      this.profileService.getUserContactInfo().subscribe({
+        next: (info) => {
+          this.userEmail.set(info.email);
+          this.userPhoneNumber.set(info.phoneNumber || '');
+        },
+      });
+    }
+
     // Ensure the form starts in the correct state (Simple mode = detailed fields disabled)
     this.updateControlsState();
     this.form.valueChanges.pipe(debounceTime(300)).subscribe((val) => {
@@ -202,6 +212,15 @@ export class FeaturesComponent implements OnInit {
     this.filteredCategories = this.categories.filter((item) =>
       item.name.toLowerCase().includes(query)
     );
+  }
+
+  getCategoryColorById(id: number) {
+    const category = this.categories.find((c) => c.id === id);
+    return category?.color ?? '';
+  }
+
+  getCategoryColor(category: Category) {
+    return category.color;
   }
 
   onFileChange(event: any) {
@@ -268,7 +287,10 @@ export class FeaturesComponent implements OnInit {
     this.form.reset({ category: null });
     this.filesArray = [];
     this.submitted.set(false);
-
+    if (this.userEmail())
+      this.form.patchValue({ contributerEmail: this.userEmail() });
+    if (this.userPhoneNumber())
+      this.form.patchValue({ contributerPhoneNumber: this.userPhoneNumber() });
     // Reset back to simple mode if you want
     if (this.isDetailedMode()) {
       this.toggleDetailedMode();
@@ -354,5 +376,9 @@ export class FeaturesComponent implements OnInit {
         },
       });
     }
+    if (this.userEmail())
+      this.form.patchValue({ contributerEmail: this.userEmail() });
+    if (this.userPhoneNumber())
+      this.form.patchValue({ contributerPhoneNumber: this.userPhoneNumber() });
   }
 }

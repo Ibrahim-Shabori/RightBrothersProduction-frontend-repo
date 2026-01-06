@@ -1,0 +1,14 @@
+/* Ensure RTL Direction works perfectly inside the dialog */
+:host ::ng-deep .p-dialog .p-dialog-content {
+  direction: rtl;
+  text-align: right;
+}
+:host ::ng-deep .p-dialog .p-dialog-header {
+  direction: rtl;
+  text-align: right;
+}
+/* Fix header close icon position in RTL */
+:host ::ng-deep .p-dialog .p-dialog-header .p-dialog-header-icon {
+  margin-right: auto;
+  margin-left: 0;
+}

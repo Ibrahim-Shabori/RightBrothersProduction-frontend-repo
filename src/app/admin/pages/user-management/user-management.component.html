@@ -1,0 +1,39 @@
+<div class="card p-4" dir="rtl">
+  <app-users-header
+    (onSearch)="handleSearch($event)"
+    [totalUsers]="totalUsersCount"
+    [totalAdmins]="totalAdminsCount"
+  >
+  </app-users-header>
+
+  <p-tabs value="0" dir="rtl">
+    <p-tablist>
+      <p-tab value="0">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-users"></i>
+          <span class="font-bold">المجتمع (المستخدمين)</span>
+        </div>
+      </p-tab>
+      <p-tab value="1">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-shield"></i>
+          <span class="font-bold">فريق العمل (المشرفين)</span>
+        </div>
+      </p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div class="mt-3">
+          <app-user-list [searchTerm]="currentSearch"></app-user-list>
+        </div>
+      </p-tabpanel>
+
+      <p-tabpanel value="1">
+        <div class="mt-3">
+          <app-admin-list [searchTerm]="currentSearch"></app-admin-list>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>

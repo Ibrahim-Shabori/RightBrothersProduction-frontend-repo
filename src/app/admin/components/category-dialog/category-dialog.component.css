@@ -1,0 +1,15 @@
+/* RTL Support for Dialog Header/Footer */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  direction: rtl;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  direction: rtl;
+}
+:host ::ng-deep .p-dialog .p-dialog-footer {
+  direction: rtl;
+  gap: 0.5rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-header-icon {
+  margin-right: auto;
+  margin-left: 0;
+}

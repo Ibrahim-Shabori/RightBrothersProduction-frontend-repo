@@ -25,6 +25,7 @@ export class RequestCardComponent {
   @Input() showStatus: boolean = true;
   @Input() showCategory: boolean = true;
   @Input() clickable: boolean = true;
+  @Input() categoryColor: string = '#ddd';
 
   @Output() vote = new EventEmitter<RequestResponseDto>();
 
@@ -33,7 +34,6 @@ export class RequestCardComponent {
   RequestStatus = RequestStatus;
 
   // --- Helpers ---
-
   get isBug(): boolean {
     return (
       this.request.type === RequestType.Bug ||
@@ -51,7 +51,7 @@ export class RequestCardComponent {
       case RequestStatus.Done:
         return 'bg-green-500';
       case RequestStatus.InConsideration:
-        return 'bg-brown-500';
+        return 'bg-violet-500';
       default:
         return 'bg-gray-300';
     }
@@ -111,7 +111,6 @@ export class RequestCardComponent {
   onVoteClick() {
     if (this.request && this.request.id) {
       this.vote.emit(this.request);
-      console.log(this.request.isVotedByCurrentUser);
     }
   }
 }

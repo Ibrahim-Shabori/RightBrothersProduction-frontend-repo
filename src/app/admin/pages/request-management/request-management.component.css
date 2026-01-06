@@ -1,0 +1,16 @@
+/* Custom marker for p-timeline to make it small and circular */
+.custom-marker {
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* Ensure Row Expansion background doesn't look weird */
+:host ::ng-deep .p-datatable-row-expansion > td {
+  padding: 0 !important;
+}

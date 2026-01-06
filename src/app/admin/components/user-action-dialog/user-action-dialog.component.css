@@ -1,0 +1,12 @@
+:host ::ng-deep .p-dialog .p-dialog-header {
+  direction: rtl;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+  direction: rtl;
+  text-align: right;
+}
+/* Fix close icon position for RTL */
+:host ::ng-deep .p-dialog .p-dialog-header-icon {
+  margin-right: auto;
+  margin-left: 0;
+}

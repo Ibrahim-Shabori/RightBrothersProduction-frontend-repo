@@ -1,0 +1,51 @@
+<div class="card p-6 flex flex-col gap-6" dir="rtl">
+  <div class="flex items-center gap-4 mb-2">
+    <div
+      class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 shadow-sm border border-slate-200"
+    >
+      <i class="pi pi-tags text-2xl"></i>
+    </div>
+    <div class="flex flex-col gap-1">
+      <h2 class="text-2xl font-bold m-0 text-slate-800">إدارة التصنيفات</h2>
+      <span class="text-slate-500 text-sm"
+        >إدارة وتصنيف المقترحات والبلاغات في النظام</span
+      >
+    </div>
+  </div>
+
+  <p-tabs [value]="currentTab" dir="rtl">
+    <p-tablist>
+      <p-tab value="0">
+        <div class="flex items-center gap-2 px-2">
+          <i class="pi pi-star text-yellow-500 text-lg"></i>
+          <span class="font-bold">المقترحات (Features)</span>
+        </div>
+      </p-tab>
+
+      <p-tab value="1">
+        <div class="flex items-center gap-2 px-2">
+          <i class="pi pi-exclamation-circle text-red-500 text-lg"></i>
+          <span class="font-bold">البلاغات (Bugs)</span>
+        </div>
+      </p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div class="py-4">
+          <app-category-list
+            [requestType]="RequestTypes.Feature"
+          ></app-category-list>
+        </div>
+      </p-tabpanel>
+
+      <p-tabpanel value="1">
+        <div class="py-4">
+          <app-category-list
+            [requestType]="RequestTypes.Bug"
+          ></app-category-list>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>

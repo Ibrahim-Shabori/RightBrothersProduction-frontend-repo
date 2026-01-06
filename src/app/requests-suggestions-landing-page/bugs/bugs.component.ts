@@ -37,6 +37,7 @@ import {
   RequestType,
 } from '../../shared/models/request.model';
 import { RequestCardComponent } from '../../request-card/request-card.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-bugs',
@@ -69,7 +70,8 @@ export class BugsComponent implements OnInit {
     private messageService: MessageService,
     private categoryService: CategoryService,
     private voteService: VoteService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private authService: AuthService
   ) {
     effect(() => {
       // This runs automatically whenever userEmail() or userPhoneNumber() changes
@@ -90,6 +92,7 @@ export class BugsComponent implements OnInit {
 
   submitted = signal<boolean>(false);
   isDetailedMode = signal<boolean>(false);
+  authStatus = signal<boolean>(false);
   searchQuery = signal('');
   currentSort = signal<'newest' | 'mostVoted'>('newest');
 
@@ -100,7 +103,7 @@ export class BugsComponent implements OnInit {
 
   categories: Category[] = [];
   filteredCategories: Category[] = [];
-  requests = signal<any[]>([]);
+  requests = signal<RequestResponseDto[]>([]);
   filesArray: File[] = [];
   userEmail = signal<string>('');
   userPhoneNumber = signal<string>('');
@@ -135,12 +138,16 @@ export class BugsComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.profileService.getUserContactInfo().subscribe({
-      next: (info) => {
-        this.userEmail.set(info.email);
-        this.userPhoneNumber.set(info.phoneNumber || '');
-      },
-    });
+    this.authService.authStatus$.subscribe((val) => this.authStatus.set(val));
+    if (this.authStatus() == true) {
+      this.profileService.getUserContactInfo().subscribe({
+        next: (info) => {
+          this.userEmail.set(info.email);
+          this.userPhoneNumber.set(info.phoneNumber || '');
+        },
+      });
+    }
+
     this.updateControlsState();
     // Smart Search: Filters the list while user types the bug title
     this.form.valueChanges.pipe(debounceTime(300)).subscribe((val) => {
@@ -156,7 +163,7 @@ export class BugsComponent implements OnInit {
       next: (data) => {
         this.categories = data;
       },
-      error: (err) => console.error('Failed to load categories', err),
+      error: (err) => {},
     });
 
     this.requestService.getBugRequests().subscribe({
@@ -194,6 +201,15 @@ export class BugsComponent implements OnInit {
     this.filteredCategories = this.categories.filter((item) =>
       item.name.toLowerCase().includes(query)
     );
+  }
+
+  getCategoryColorById(id: number) {
+    const category = this.categories.find((c) => c.id === id);
+    return category!.color;
+  }
+
+  getCategoryColor(category: Category) {
+    return category.color;
   }
 
   onFileChange(event: any) {
@@ -259,7 +275,6 @@ export class BugsComponent implements OnInit {
             this.reset();
           },
           error: (err) => {
-            console.error(err);
             this.messageService.add({
               severity: 'error',
               summary: 'خطأ',
@@ -289,12 +304,21 @@ export class BugsComponent implements OnInit {
         },
       });
     }
+    if (this.userEmail())
+      this.form.patchValue({ contributerEmail: this.userEmail() });
+    if (this.userPhoneNumber())
+      this.form.patchValue({ contributerPhoneNumber: this.userPhoneNumber() });
   }
 
   reset() {
     this.form.reset({ category: null });
     this.filesArray = [];
     this.submitted.set(false);
+
+    if (this.userEmail())
+      this.form.patchValue({ contributerEmail: this.userEmail() });
+    if (this.userPhoneNumber())
+      this.form.patchValue({ contributerPhoneNumber: this.userPhoneNumber() });
 
     if (this.isDetailedMode()) {
       this.toggleDetailedMode();
@@ -307,7 +331,7 @@ export class BugsComponent implements OnInit {
 
     if (query) {
       filtered = filtered.filter((product) =>
-        product.requestTitle?.toLowerCase().includes(query)
+        product.title?.toLowerCase().includes(query)
       );
     }
 

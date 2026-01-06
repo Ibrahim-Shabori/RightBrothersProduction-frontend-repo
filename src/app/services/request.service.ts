@@ -1,14 +1,29 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  RequestManagementQueryParameters,
+  RequestQueryParameters,
+} from './../shared/models/period.model';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { RequestResponseDto } from '../shared/models/request.model';
-
+import {
+  RequestResponseDto,
+  NotAssignedRequestDto,
+  ReviewRequestDto,
+  RequestPageItemDto,
+  RequestManagementPageItemDto,
+} from '../shared/models/request.model';
+import {
+  QueryPeriod,
+  StatDto,
+  ChartDataPoint,
+} from '../shared/models/period.model';
+import { PaginatedResult } from '../shared/models/pagination.model';
 @Injectable({
   providedIn: 'root',
 })
 export class RequestService {
-  private apiUrl = `${environment.apiUrl}/request`; // Adjust path as needed
+  private apiUrl = `${environment.apiUrl}/request`;
 
   constructor(private http: HttpClient) {}
 
@@ -22,7 +37,6 @@ export class RequestService {
 
     // Convert numbers/enums to string for FormData
     // Note: Assuming Category is ID based on your DTO, if your form has object {label, value}, extract value
-    console.log('Category being sent:', data.category);
     formData.append('CategoryId', data.category.id);
 
     // Assuming RequestType is an Enum or Int in Backend
@@ -42,8 +56,6 @@ export class RequestService {
     return this.http.post(this.apiUrl, formData);
   }
 
-  // Keep your existing createRequest as is.
-
   createDetailedRequest(data: any, files: File[]): Observable<any> {
     const formData = new FormData();
 
@@ -57,7 +69,10 @@ export class RequestService {
     formData.append('DetailedDescription', data.detailedDescription);
 
     if (data.usageDurationInMonths) {
-      formData.append('UsageDurationInMonths', data.usageDurationInMonths);
+      formData.append(
+        'UsageDurationInMonths',
+        data.usageDurationInMonths || '0'
+      );
     }
     if (data.urgencyCause) {
       formData.append('UrgencyCause', data.urgencyCause);
@@ -116,12 +131,154 @@ export class RequestService {
     );
   }
 
-  // inside RequestService class
+  getToReviewRequests(
+    queryParams: RequestQueryParameters
+  ): Observable<PaginatedResult<RequestPageItemDto[]>> {
+    let params = new HttpParams();
+
+    for (const key in queryParams) {
+      const value = queryParams[key as keyof RequestQueryParameters];
+
+      if (value !== null && value !== undefined && value !== '') {
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            params = params.append(key, item.toString());
+          });
+        } else {
+          params = params.append(key, value.toString());
+        }
+      }
+    }
+    return this.http
+      .get<RequestPageItemDto[]>(`${this.apiUrl}/review/pages`, {
+        observe: 'response', // Request full response
+        params,
+      })
+      .pipe(
+        map((response) => {
+          const paginatedResult = new PaginatedResult<RequestPageItemDto[]>();
+          if (response.body) {
+            // Apply your mapping logic here (Date conversion, short description, etc.)
+            paginatedResult.result = response.body.map((req) => ({
+              ...req,
+              createdAt: new Date(req.createdAt),
+              shortDescription: this.truncate(req.description),
+            }));
+          }
+          const paginationHeader = response.headers.get('X-Pagination');
+          if (paginationHeader) {
+            // Parse the JSON string into the object
+            paginatedResult.pagination = JSON.parse(paginationHeader);
+          }
+
+          return paginatedResult;
+        })
+      );
+  }
+
+  getToManageRequests(
+    queryParams: RequestManagementQueryParameters
+  ): Observable<PaginatedResult<RequestManagementPageItemDto[]>> {
+    let params = new HttpParams();
+
+    for (const key in queryParams) {
+      const value = queryParams[key as keyof RequestManagementQueryParameters];
+
+      if (value !== null && value !== undefined && value !== '') {
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            params = params.append(key, item.toString());
+          });
+        } else {
+          params = params.append(key, value.toString());
+        }
+      }
+    }
+    return this.http
+      .get<RequestManagementPageItemDto[]>(`${this.apiUrl}/manage/pages`, {
+        observe: 'response',
+        params,
+      })
+      .pipe(
+        map((response) => {
+          const paginatedResult = new PaginatedResult<
+            RequestManagementPageItemDto[]
+          >();
+          if (response.body) {
+            // Apply your mapping logic here (Date conversion, short description, etc.)
+            paginatedResult.result = response.body.map((req) => ({
+              ...req,
+              votesCount: req.votesCount,
+              trendsCount: req.trendsCount,
+              lastUpdatedAt: new Date(req.lastUpdatedAt),
+              logs: req.logs.map((log) => ({
+                ...log,
+                createdAt: new Date(log.createdAt),
+              })),
+            }));
+          }
+          const paginationHeader = response.headers.get('X-Pagination');
+          if (paginationHeader) {
+            // Parse the JSON string into the object
+            paginatedResult.pagination = JSON.parse(paginationHeader);
+          }
+
+          return paginatedResult;
+        })
+      );
+  }
+
   getRequestsByUserId(userId: string): Observable<RequestResponseDto[]> {
     return this.http.get<RequestResponseDto[]>(`${this.apiUrl}/user/${userId}`);
   }
 
   getVotedRequests(): Observable<RequestResponseDto[]> {
     return this.http.get<RequestResponseDto[]>(`${this.apiUrl}/voted`);
+  }
+
+  getRequestsCountInAPeriod(period: QueryPeriod): Observable<StatDto> {
+    return this.http.get<StatDto>(`${this.apiUrl}/stats/new/${period}`);
+  }
+
+  getDoneRequestsInAPeriod(period: QueryPeriod): Observable<StatDto> {
+    return this.http.get<StatDto>(`${this.apiUrl}/stats/done/${period}`);
+  }
+
+  getActiveRequestsInAPeriod(period: QueryPeriod): Observable<StatDto> {
+    return this.http.get<StatDto>(`${this.apiUrl}/stats/active/${period}`);
+  }
+
+  getNotAssignedRequests(
+    numberOfRequests: number
+  ): Observable<NotAssignedRequestDto[]> {
+    return this.http.get<NotAssignedRequestDto[]>(
+      `${this.apiUrl}/recent?numberOfRequests=${numberOfRequests}`
+    );
+  }
+
+  getMadeRequestsCountVsDoneRequestsCountInAPeriod(period: QueryPeriod) {
+    return this.http.get<ChartDataPoint[]>(
+      `${this.apiUrl}/stats/chart/madevsdone/${period}`
+    );
+  }
+
+  assignAdminToRequest(requestId: number) {
+    return this.http.post(`${this.apiUrl}/assign/${requestId}`, {});
+  }
+
+  reviewRequest(requestId: number, review: ReviewRequestDto) {
+    return this.http.post(`${this.apiUrl}/review/${requestId}`, review);
+  }
+
+  deleteRequest(requestId: number) {
+    return this.http.delete(`${this.apiUrl}/${requestId}`);
+  }
+
+  // Helpers
+  private truncate(text: string): string {
+    if (!text) return '';
+    return text.split(' ').length > 20
+      ? text.split(' ').slice(0, 20).join(' ') + '...'
+      : text;
   }
 }

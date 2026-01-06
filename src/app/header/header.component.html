@@ -23,7 +23,7 @@
 
     <ng-template pTemplate="end">
       <div class="flex items-center gap-3">
-        @if (isLoggedIn) { @if (role === 'Admin') {
+        @if (isLoggedIn) { @if (role === 'Admin' || role === 'SuperAdmin') {
         <p-tag
           value="مدير النظام"
           severity="danger"

@@ -212,6 +212,14 @@
                 form.get('category')?.invalid && submitted()
             }"
           >
+            <ng-template let-category #item>
+              <div
+                class="text-white text-center p-2 rounded-2xl"
+                [style.background-color]="getCategoryColor(category)"
+              >
+                {{ category.name }}
+              </div>
+            </ng-template>
           </p-autoComplete>
           @if(form.get('category')?.invalid && submitted()){
           <small class="text-red-500">الفئة مطلوبة.</small>
@@ -322,6 +330,7 @@
         [request]="req"
         [showDescription]="true"
         [showCategory]="true"
+        [categoryColor]="getCategoryColorById(req.categoryId)"
         (vote)="handleVote($event)"
       >
       </app-request-card>

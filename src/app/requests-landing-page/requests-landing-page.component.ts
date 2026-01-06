@@ -8,12 +8,14 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { MultiSelectModule } from 'primeng/multiselect'; // <--- NEW for Dropdown List
 import {
+  Category,
   RequestResponseDto,
   RequestStatus,
 } from '../shared/models/request.model';
 import { RequestCardComponent } from '../request-card/request-card.component';
 import { RequestService } from '../services/request.service';
 import { VoteService } from '../services/vote.service';
+import { CategoryService } from '../services/category.service';
 @Component({
   selector: 'app-requests-landing-page',
   standalone: true,
@@ -32,21 +34,32 @@ import { VoteService } from '../services/vote.service';
 export class RequestsLandingPageComponent {
   constructor(
     private requestService: RequestService,
-    private voteService: VoteService
+    private voteService: VoteService,
+    private categoryService: CategoryService
   ) {}
 
   selectedCategories: string[] = [];
   requests: any = null;
+  categories: Category[] = [];
   ngOnInit() {
     this.requestService.getRequests().subscribe({
       next: (data) => {
         this.requests = {
-          review: data.filter((r) => r.status === RequestStatus.UnderReview),
+          inConsideration: data.filter(
+            (r) => r.status === RequestStatus.InConsideration
+          ),
           inProgress: data.filter((r) => r.status === RequestStatus.InProgress),
           done: data.filter((r) => r.status === RequestStatus.Done),
         };
       },
       error: (err) => console.error(err),
+    });
+
+    this.categoryService.getAllCategories().subscribe({
+      next: (data) => {
+        this.categories = data;
+      },
+      error: (err) => {},
     });
   }
 
@@ -56,6 +69,11 @@ export class RequestsLandingPageComponent {
     { label: 'سؤال', value: 'question' },
     { label: 'أخرى', value: 'other' },
   ];
+
+  getCategoryColor(id: number) {
+    const category = this.categories.find((c) => c.id === id);
+    return category ? category.color : '';
+  }
 
   handleVote(request: RequestResponseDto) {
     // 1. Optimistic Update (Make UI instant)

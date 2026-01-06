@@ -1,0 +1,134 @@
+<div
+  class="flex flex-col h-full bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden"
+>
+  <div
+    class="flex justify-between items-center p-5 border-b border-slate-50 bg-white"
+  >
+    <div class="flex items-center gap-2">
+      <h3 class="font-bold text-slate-800 text-lg tracking-tight">
+        قائمة المراجعة
+      </h3>
+      @if (requests.length > 0) {
+      <span
+        class="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded-full"
+      >
+        {{ requests.length }}
+      </span>
+      }
+    </div>
+    <p-button
+      label="عرض الكل"
+      [link]="true"
+      styleClass="text-sm font-bold text-primary-600 p-0"
+    ></p-button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto p-3 custom-scrollbar relative">
+    @if (isLoading) {
+    <div class="flex flex-col gap-3">
+      @for (i of [1, 2, 3, 4]; track i) {
+      <div class="flex items-center gap-3 p-2">
+        <p-skeleton size="3rem" styleClass="rounded-lg"></p-skeleton>
+        <div class="flex-1 flex flex-col gap-2">
+          <p-skeleton width="60%" height="0.8rem"></p-skeleton>
+          <p-skeleton width="40%" height="0.6rem"></p-skeleton>
+        </div>
+      </div>
+      }
+    </div>
+    } @if (!isLoading && requests.length === 0) {
+    <div
+      class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 gap-2"
+    >
+      <div
+        class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center"
+      >
+        <i class="pi pi-check-circle text-3xl text-green-500"></i>
+      </div>
+      <p class="text-sm font-bold text-slate-500">لا توجد طلبات معلقة</p>
+      <p class="text-xs">رائع! لقد قمت بإنهاء جميع المهام.</p>
+    </div>
+    } @if (!isLoading && requests.length > 0) {
+    <div class="flex flex-col gap-2">
+      @for (req of requests; track req.id) {
+      <div
+        class="group relative flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-all duration-200 border border-transparent hover:border-slate-200 cursor-pointer"
+        (click)="onView(req.id)"
+      >
+        <div
+          class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100"
+          [ngClass]="
+            req.type >= 2
+              ? 'bg-red-50 text-red-600'
+              : 'bg-indigo-50 text-indigo-600'
+          "
+        >
+          <i
+            [class]="
+              req.type >= 2
+                ? 'pi pi-exclamation-triangle text-xl'
+                : 'pi pi-lightbulb text-xl'
+            "
+          ></i>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-slate-700 text-sm truncate max-w-[180px]">
+              {{ req.title }}
+            </h4>
+            <span class="text-[10px] text-slate-400 font-mono">{{
+              req.createdAt | date : "MM/dd"
+            }}</span>
+          </div>
+
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-xs text-slate-500 truncate max-w-[120px]">
+              {{ req.user?.name || "مستخدم" }}
+            </span>
+            <span
+              class="text-[10px] px-1.5 py-0.5 rounded-md font-bold"
+              [ngClass]="
+                req.type >= 2
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-indigo-100 text-indigo-700'
+              "
+            >
+              {{ getLabel(req.type) }}
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="absolute left-3 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-sm border border-slate-100"
+        >
+          <button
+            pButton
+            icon="pi pi-check"
+            [rounded]="true"
+            [text]="true"
+            severity="success"
+            class="w-8 h-8 !p-0"
+            pTooltip="قبول سريع"
+            tooltipPosition="top"
+            (click)="onApprove(req.id, $event)"
+          ></button>
+
+          <button
+            pButton
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            class="w-8 h-8 !p-0"
+            pTooltip="رفض"
+            tooltipPosition="top"
+            (click)="onReject(req.id, $event)"
+          ></button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>

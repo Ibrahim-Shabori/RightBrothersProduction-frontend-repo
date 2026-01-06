@@ -1,0 +1,109 @@
+<div
+  class="flex flex-col h-full bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden"
+>
+  <div class="flex justify-between items-center p-5 border-b border-slate-50">
+    <div class="flex items-center gap-2">
+      <h3 class="font-bold text-slate-800 text-lg tracking-tight">
+        الأكثر تأثيراً
+      </h3>
+      <i class="pi pi-bolt text-yellow-500 text-lg"></i>
+    </div>
+    <p-button
+      label="عرض الكل"
+      [link]="true"
+      styleClass="text-sm font-bold text-primary-600 p-0"
+    >
+    </p-button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto p-3 custom-scrollbar">
+    @if (isLoading) {
+    <div class="flex flex-col gap-3">
+      @for(i of [1,2,3,4,5]; track i) {
+      <div class="flex items-center gap-3 p-2">
+        <p-skeleton shape="circle" size="2.5rem"></p-skeleton>
+        <div class="flex-1">
+          <p-skeleton
+            width="70%"
+            height="0.8rem"
+            styleClass="mb-1"
+          ></p-skeleton>
+          <p-skeleton width="40%" height="0.6rem"></p-skeleton>
+        </div>
+      </div>
+      }
+    </div>
+    } @if (!isLoading && users.length === 0) {
+    <div
+      class="flex flex-col items-center justify-center h-48 text-slate-400 gap-2"
+    >
+      <div
+        class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center"
+      >
+        <i class="pi pi-users text-2xl"></i>
+      </div>
+      <p class="text-sm font-medium">لا توجد بيانات متاحة</p>
+    </div>
+    } @if (!isLoading && users.length > 0) {
+    <div class="flex flex-col gap-2">
+      @for (user of users; track user.userId; let i = $index) {
+
+      <div
+        class="flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 hover:shadow-sm cursor-pointer group"
+        [ngClass]="getRankStyles(i).container"
+        [class.hover:bg-slate-50]="i > 2"
+        [class.border-slate-100]="i > 2"
+        (click)="onViewUser(user.userId)"
+      >
+        <div
+          class="w-6 text-center shrink-0 font-bold text-sm"
+          [ngClass]="i < 3 ? 'text-slate-700' : 'text-slate-400'"
+        >
+          @if(i === 0) { <i class="pi pi-crown text-yellow-500 text-lg"></i> }
+          @else { <span>#{{ i + 1 }}</span> }
+        </div>
+
+        @if (!user.imageURL) {
+        <p-avatar
+          [label]="getFirstChar(user.userName)"
+          shape="circle"
+          size="normal"
+          styleClass="bg-primary-100 text-primary-700 font-bold border border-white shadow-sm"
+        >
+        </p-avatar>
+        } @else {
+        <p-avatar
+          [image]="constructImageUrl(user.imageURL)"
+          shape="circle"
+          size="normal"
+          styleClass="bg-primary-100 text-primary-700 font-bold border border-white shadow-sm"
+        >
+        </p-avatar>
+        }
+
+        <div class="flex-1 min-w-0">
+          <h4 class="font-bold text-slate-800 text-sm truncate">
+            {{ user.userName }}
+          </h4>
+          <p class="text-xs text-slate-500 flex items-center gap-1">
+            <i class="pi pi-file text-[10px]"></i>
+            {{ user.requestsGotVotes }} مقترحات
+          </p>
+        </div>
+
+        <div class="flex flex-col items-end">
+          <span class="text-xs font-bold text-slate-400 uppercase text-[10px]"
+            >Impact</span
+          >
+          <span
+            class="font-mono font-bold text-primary-600 bg-white px-2 py-0.5 rounded-md shadow-sm text-sm border border-slate-100"
+          >
+            {{ user.receivedVotesCount }}
+          </span>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>

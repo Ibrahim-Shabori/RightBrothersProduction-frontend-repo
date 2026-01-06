@@ -1,0 +1,60 @@
+<p-dialog
+  [header]="headerTitle"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '450px', maxWidth: '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="close()"
+>
+  <div
+    class="flex flex-col items-center justify-center text-center pt-4 pb-2"
+    dir="rtl"
+  >
+    <i [class]="iconClass" class="text-6xl mb-4"></i>
+
+    <h3 class="mt-0 mb-3 text-900 font-bold" *ngIf="user">
+      {{ user.fullName }}
+    </h3>
+
+    <p class="line-height-3 m-0 text-700 px-3" *ngIf="action === 'promote'">
+      هل أنت متأكد من منح صلاحيات <b>الإشراف</b> لهذا المستخدم؟ <br />
+      سيتمكن من إدارة الطلبات والرد على المستخدمين.
+    </p>
+
+    <p class="line-height-3 m-0 text-700 px-3" *ngIf="action === 'demote'">
+      هل أنت متأكد من <b>سحب صلاحيات الإشراف</b>؟ <br />
+      سيعود هذا المشرف ليكون مستخدماً عادياً ولن يتمكن من إدارة النظام.
+    </p>
+
+    <p class="line-height-3 m-0 text-700 px-3" *ngIf="action === 'ban'">
+      هل أنت متأكد من <b>حظر</b> هذا الحساب؟ <br />
+      لن يتمكن المستخدم من تسجيل الدخول أو إضافة طلبات جديدة.
+    </p>
+    <p class="line-height-3 m-0 text-700 px-3" *ngIf="action === 'unban'">
+      هل أنت متأكد من <b>إلغاء حظر</b> هذا الحساب؟ <br />
+      سيتمكن المستخدم من تسجيل الدخول وإضافة طلبات جديدة.
+    </p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-2 justify-center w-full mt-3" dir="rtl">
+      <button
+        pButton
+        [label]="confirmButtonLabel"
+        [icon]="action === 'ban' ? 'pi pi-ban' : 'pi pi-check'"
+        [class]="confirmButtonClass"
+        class="flex-1"
+        (click)="confirm()"
+      ></button>
+
+      <button
+        pButton
+        label="إلغاء"
+        icon="pi pi-times"
+        class="p-button-outlined p-button-secondary flex-1"
+        (click)="close()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,101 @@
+<div
+  class="h-full flex flex-col bg-white border-l border-slate-200 shadow-sm w-[280px] transition-all duration-300"
+>
+  <div
+    class="h-20 flex items-center px-6 border-b border-slate-100 bg-slate-50/30"
+  >
+    <div class="flex items-center gap-3">
+      <div
+        routerLink="/"
+        class="cursor-pointer w-10 h-10 bg-transparent rounded-xl shadow-sm flex items-center justify-center text-white"
+      >
+        <img
+          src="/icon.png"
+          class="w-10 h-10 group-hover:scale-105 transition-transform"
+          alt="Logo"
+        />
+      </div>
+      <div class="flex flex-col cursor-pointer" routerLink="/">
+        <span class="font-bold text-lg text-slate-800 tracking-tight"
+          >روبست بتس</span
+        >
+        <span class="text-[10px] text-slate-400 font-medium tracking-wide"
+          >V 1.0.0</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-2 custom-scrollbar"
+  >
+    <span
+      class="text-xs font-bold text-slate-400 px-4 mb-2 uppercase tracking-wider"
+      >القائمة الرئيسية</span
+    >
+
+    @for (item of menuItems; track item.label) {
+    <a
+      [routerLink]="item.route"
+      [routerLinkActive]="'bg-primary-50 text-primary-700 font-bold shadow-sm'"
+      [routerLinkActiveOptions]="{ exact: item.exact }"
+      #rla="routerLinkActive"
+      (click)="onLinkClick()"
+      pRipple
+      class="p-ripple relative flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all duration-200 select-none group"
+    >
+      <i
+        [class]="item.icon"
+        class="text-xl transition-colors group-hover:text-primary-600"
+      ></i>
+
+      <span class="text-sm font-medium">{{ item.label }}</span>
+
+      <div
+        class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-l-lg bg-primary-600 opacity-0 transition-opacity duration-200"
+        [class.opacity-0]="!rla.isActive"
+        [class.opacity-100]="rla.isActive"
+      ></div>
+
+      @if (item.showBadge && pendingRequestsCount() > 0) {
+      <p-badge
+        [value]="pendingRequestsCount().toString()"
+        severity="danger"
+        styleClass="mr-auto shadow-sm"
+      ></p-badge>
+      }
+    </a>
+    }
+  </div>
+
+  <div class="p-5 border-t border-slate-100 bg-slate-50/50">
+    <div
+      class="flex items-center gap-3 mb-4 p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 cursor-default border border-transparent hover:border-slate-100"
+    >
+      <p-avatar
+        icon="pi pi-user"
+        styleClass="bg-white text-primary-600 border-2 border-slate-200 shadow-sm"
+        shape="circle"
+        size="large"
+      >
+      </p-avatar>
+
+      <div class="flex flex-col overflow-hidden">
+        <span class="text-sm font-bold text-slate-800 truncate">{{
+          adminName()
+        }}</span>
+        <span class="text-xs text-slate-500 truncate">{{ adminRole() }}</span>
+      </div>
+    </div>
+
+    <p-button
+      label="تسجيل الخروج"
+      icon="pi pi-sign-out"
+      severity="secondary"
+      [outlined]="true"
+      styleClass="w-full text-xs font-bold py-2 bg-white hover:bg-slate-50"
+      (onClick)="logout()"
+    >
+    </p-button>
+  </div>
+</div>

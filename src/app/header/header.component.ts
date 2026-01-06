@@ -163,11 +163,11 @@ export class HeaderComponent implements OnInit {
       },
     ];
 
-    if (this.role === 'Admin') {
+    if (this.role === 'Admin' || this.role === 'SuperAdmin') {
       this.items.push({
         label: 'إدارة النظام',
         icon: 'pi pi-cog',
-        styleClass: 'text-red-600 font-bold',
+        styleClass: 'text-red-600',
         items: [
           {
             label: 'المستخدمين',

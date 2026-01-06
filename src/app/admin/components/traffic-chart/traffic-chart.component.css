@@ -1,0 +1,13 @@
+/* Ensure the PrimeNG chart component fills the container absolutely */
+:host ::ng-deep .p-chart {
+  height: 100%;
+  width: 100%;
+}
+
+/* Critical for Chart.js responsiveness:
+   The canvas needs to be told explicitly not to exceed its flex parent 
+*/
+:host ::ng-deep canvas {
+  max-height: 100% !important;
+  max-width: 100% !important;
+}

@@ -1,0 +1,82 @@
+<p-dialog
+  [header]="headerTitle"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '400px', maxWidth: '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="close()"
+>
+  <div class="flex flex-col gap-5 pt-2" dir="rtl">
+    <div class="flex flex-col gap-2">
+      <label for="categoryName" class="font-bold text-slate-700"
+        >اسم التصنيف</label
+      >
+      <input
+        pInputText
+        id="categoryName"
+        [(ngModel)]="name"
+        placeholder="مثال: واجهة المستخدم، قاعدة البيانات..."
+        class="w-full"
+        autofocus
+      />
+      <small class="text-slate-400" *ngIf="!name">الحقل مطلوب</small>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-slate-700">لون التميز</label>
+        <div class="flex items-center gap-3">
+          <p-colorPicker [(ngModel)]="color" appendTo="body"></p-colorPicker>
+          <span class="text-sm text-slate-500 font-mono">{{ color }}</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-slate-700">الحالة</label>
+        <div class="flex items-center gap-2">
+          <p-toggleswitch [(ngModel)]="isActive"></p-toggleswitch>
+          <span
+            [class]="isActive ? 'text-green-600' : 'text-slate-400'"
+            class="text-sm font-semibold"
+          >
+            {{ isActive ? "نشط" : "مؤرشف" }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="p-3 border border-slate-100 rounded-lg bg-slate-50 flex items-center justify-between mt-2"
+    >
+      <span class="text-sm text-slate-500">معاينة:</span>
+      <div
+        class="px-3 py-1 rounded text-white text-sm font-bold shadow-sm"
+        [style.background-color]="color"
+      >
+        {{ name || "اسم التصنيف" }}
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2 mt-4" dir="rtl">
+      <button
+        pButton
+        label="إلغاء"
+        icon="pi pi-times"
+        class="p-button-text p-button-secondary"
+        (click)="close()"
+      ></button>
+
+      <button
+        pButton
+        [label]="saveButtonLabel"
+        [icon]="saveButtonIcon"
+        class="p-button-primary"
+        [disabled]="!name.trim()"
+        (click)="save()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

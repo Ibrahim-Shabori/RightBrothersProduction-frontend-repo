@@ -132,7 +132,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         );
         if (rawUrl) {
           this.resolvedPictureUrl.set(`${rawUrl}?t=${new Date().getTime()}`);
-          console.log(`that is the one: ${this.resolvedPictureUrl()}`);
         } else {
           this.resolvedPictureUrl.set(undefined);
         }
@@ -140,7 +139,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load profile', err);
         this.isLoading = false;
       },
     });
@@ -157,12 +155,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.profileService.getProfilePictureUrl(data.profilePictureUrl)
         );
 
-        console.log(`that is the one: ${this.resolvedPictureUrl()}`);
-
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load user', err);
         this.isLoading = false;
       },
     });

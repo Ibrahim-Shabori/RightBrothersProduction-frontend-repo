@@ -1,0 +1,150 @@
+<div
+  class="flex flex-col gap-6 animate-fadein p-4 md:p-6 min-h-screen bg-slate-50/50"
+>
+  <p-toast position="bottom-right"></p-toast>
+
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+        لوحة التحكم
+      </h1>
+      <p class="text-slate-500 text-sm mt-1">
+        أهلاً بك مجدداً، إليك ملخص سريع لما يحدث في النظام اليوم.
+      </p>
+    </div>
+
+    <div class="flex gap-3">
+      <p-button
+        label="تحميل تقرير"
+        icon="pi pi-download"
+        [outlined]="true"
+        severity="secondary"
+        styleClass="bg-white"
+      >
+      </p-button>
+
+      <p-button
+        label="تحديث البيانات"
+        icon="pi pi-refresh"
+        [loading]="isLoadingWidgets"
+        (onClick)="refreshData()"
+      >
+      </p-button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <app-stat-card
+      label="إجمالي المستخدمين"
+      [value]="stats.users.value"
+      icon="pi pi-users"
+      color="primary"
+      [trendPercentage]="stats.users.trend"
+      trendLabel="مقارنة بالشهر الماضي"
+    >
+    </app-stat-card>
+
+    <app-stat-card
+      label="المقترحات النشطة"
+      [value]="stats.activeRequests.value"
+      icon="pi pi-bolt"
+      color="warning"
+      [trendPercentage]="stats.activeRequests.trend"
+      trendLabel="منذ أسبوع"
+    >
+    </app-stat-card>
+
+    <app-stat-card
+      label="بانتظار المراجعة"
+      [value]="stats.pendingReview.value"
+      icon="pi pi-inbox"
+      color="danger"
+      [trendPercentage]="stats.pendingReview.trend"
+      trendLabel="تراكم مهام"
+    >
+    </app-stat-card>
+
+    <app-stat-card
+      label="تم التنفيذ"
+      [value]="stats.solved.value"
+      icon="pi pi-check-circle"
+      color="success"
+      [trendPercentage]="stats.solved.trend"
+      trendLabel="إنجاز عالي"
+    >
+    </app-stat-card>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 h-full items-start">
+    <div class="xl:col-span-8 flex flex-col gap-6">
+      <div
+        class="h-[420px] transition-opacity duration-300"
+        [class.opacity-50]="isLoadingWidgets"
+      >
+        <app-traffic-chart
+          title="تحليل الطلبات (2025)"
+          [labels]="chartData.labels"
+          [newRequestsData]="chartData.new"
+          [solvedRequestsData]="chartData.solved"
+        >
+          <div class="chart-actions">
+            <button
+              class="flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              <span>آخر 6 أشهر</span>
+              <i class="pi pi-chevron-down text-[10px]"></i>
+            </button>
+          </div>
+        </app-traffic-chart>
+      </div>
+
+      <div
+        class="bg-indigo-900 rounded-2xl p-8 text-white flex items-center justify-between shadow-lg overflow-hidden relative group"
+      >
+        <div class="relative z-10">
+          <h3 class="font-bold text-xl mb-2 flex items-center gap-2">
+            <i class="pi pi-check-circle text-green-400"></i>
+            حالة النظام مستقرة
+          </h3>
+          <p class="text-indigo-200 text-sm max-w-md leading-relaxed">
+            جميع الخدمات تعمل بكفاءة عالية. لم يتم تسجيل أي أخطاء حرجة في
+            السيرفر خلال الـ 24 ساعة الماضية.
+          </p>
+        </div>
+
+        <i
+          class="pi pi-server text-9xl text-indigo-800/30 absolute -left-6 -bottom-8 transform group-hover:scale-110 transition-transform duration-500"
+        ></i>
+
+        <div class="relative z-10">
+          <button
+            class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-sm font-bold backdrop-blur-sm transition-all"
+          >
+            فحص النظام
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="xl:col-span-4 flex flex-col gap-6 w-full">
+      <div class="h-[400px]">
+        <app-recent-actions-widget
+          [requests]="recentRequests"
+          [isLoading]="isLoadingWidgets"
+          (approve)="onQuickApprove($event)"
+          (reject)="onQuickReject($event)"
+          (view)="navigateToRequest($event)"
+        >
+        </app-recent-actions-widget>
+      </div>
+
+      <div class="h-[400px]">
+        <app-top-contributors-widget
+          [users]="topUsers"
+          [isLoading]="isLoadingWidgets"
+        >
+        </app-top-contributors-widget>
+      </div>
+    </div>
+  </div>
+</div>

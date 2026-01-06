@@ -1,0 +1,4 @@
+:host ::ng-deep .p-row-toggler {
+  /* Make the expand arrow distinct */
+  color: #6366f1;
+}

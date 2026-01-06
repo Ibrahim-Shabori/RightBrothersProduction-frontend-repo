@@ -1,0 +1,13 @@
+<div class="flex flex-col items-center gap-1">
+  <div
+    class="flex items-center justify-center px-2 py-1 border-round-2xl text-sm font-bold rounded-3xl"
+    [ngClass]="colorClass"
+    [pTooltip]="'التغير في عدد الأصوات: ' + formattedValue"
+  >
+    <span>{{ formattedValue }}</span>
+  </div>
+
+  <span class="text-xs text-500 white-space-nowrap">
+    {{ periodLabel }}
+  </span>
+</div>
