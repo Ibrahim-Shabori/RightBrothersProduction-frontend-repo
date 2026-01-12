@@ -1,0 +1,316 @@
+<div
+  class="card bg-white border border-slate-200 rounded-xl shadow-sm p-6 flex flex-col gap-5 relative overflow-hidden transition-all hover:shadow-md"
+  dir="rtl"
+>
+  <div
+    class="absolute top-0 left-0 right-0 h-1"
+    [style.background-color]="request.categoryColor || '#cbd5e1'"
+  ></div>
+
+  <div class="flex items-start justify-between">
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-3">
+        <div
+          class="relative flex h-3 w-3 cursor-help"
+          [pTooltip]="getStatusLabel(request.status)"
+          tooltipPosition="top"
+        >
+          <span
+            *ngIf="isItsStatusInProgress(request.status)"
+            class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-yellow-400"
+          ></span>
+
+          <span
+            class="relative inline-flex rounded-full h-3 w-3 shadow-sm border border-white/20"
+            [ngClass]="getStatusBackgroundColor(request.status)"
+          ></span>
+        </div>
+
+        <p-tag
+          *ngIf="isItsTypeABug(request.type)"
+          icon="pi pi-exclamation-triangle"
+          severity="danger"
+          value="Bug"
+          styleClass="text-xs px-2 py-0.5"
+        >
+        </p-tag>
+
+        <span
+          class="px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm"
+          [style.background-color]="request.categoryColor"
+        >
+          {{ request.categoryName }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs text-slate-500 mt-1">
+        <div
+          class="flex items-center gap-2 cursor-pointer p-1 -mr-1 rounded-lg hover:bg-slate-50 transition-colors group"
+        >
+          @if (request.createdByPictureUrl != null &&
+          request.createdByPictureUrl != ""){
+          <p-avatar
+            [image]="request.createdByPictureUrl"
+            shape="circle"
+            size="normal"
+            styleClass="border-2 border-white shadow-md"
+            [style]="{ 'background-color': '#f1f5f9', color: '#475569' }"
+          >
+          </p-avatar>
+          } @else {
+          <p-avatar
+            [label]="getInitials(request.createdByName)"
+            shape="circle"
+            size="normal"
+            styleClass="border-2 border-white shadow-md"
+            [style]="{ 'background-color': '#f1f5f9', color: '#475569' }"
+          >
+          </p-avatar>
+          }
+          <span
+            class="font-bold text-slate-700 group-hover:text-blue-600 transition-colors"
+          >
+            {{ request.createdByName }}
+          </span>
+        </div>
+
+        <span class="text-slate-300">•</span>
+
+        <span class="flex items-center gap-1">
+          <i class="pi pi-clock"></i>
+          {{ request.createdAt | date : "mediumDate" }}
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button
+        pButton
+        icon="pi pi-arrow-up"
+        [label]="request.votesCount.toString()"
+        [class]="voteButtonClass"
+        [pTooltip]="hasVoted ? 'إلغاء التصويت' : 'تصويت'"
+        tooltipPosition="bottom"
+        (click)="handleVote()"
+      ></button>
+
+      <div
+        *ngIf="showEditButton || showDeleteButton"
+        class="h-6 w-px bg-slate-200 mx-1"
+      ></div>
+
+      <ng-container *ngIf="showEditButton || showDeleteButton">
+        <button
+          *ngIf="showEditButton"
+          pButton
+          icon="pi pi-pencil"
+          class="p-button-rounded p-button-text p-button-secondary p-button-sm"
+          pTooltip="تعديل"
+          tooltipPosition="bottom"
+          (click)="handleEdit()"
+        ></button>
+
+        <button
+          *ngIf="showDeleteButton"
+          pButton
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-text p-button-danger p-button-sm"
+          pTooltip="حذف"
+          tooltipPosition="bottom"
+          (click)="handleDelete()"
+        ></button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <h1 class="text-2xl font-bold text-slate-800 m-0 leading-tight">
+      {{ request.title }}
+    </h1>
+
+    <p class="text-slate-600 leading-relaxed whitespace-pre-wrap text-base">
+      {{ request.description }}
+    </p>
+  </div>
+
+  <div
+    *ngIf="request.files && request.files.length > 0"
+    class="border-t border-slate-100 pt-4 mt-2"
+  >
+    <h3
+      class="text-xs font-bold text-slate-500 mb-3 uppercase flex items-center gap-2"
+    >
+      <i class="pi pi-paperclip"></i>
+      المرفقات ({{ request.files.length }})
+    </h3>
+
+    <div class="flex flex-wrap gap-3">
+      <div
+        *ngIf="request.files && request.files.length > 0"
+        class="flex flex-wrap gap-3 mt-2"
+      >
+        <div
+          *ngFor="let file of request.files"
+          class="group flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 cursor-pointer transition-all hover:bg-blue-50 hover:border-blue-200 hover:shadow-sm"
+          (click)="handleDownload(file.link)"
+          role="button"
+          tabindex="0"
+        >
+          <div
+            class="bg-white p-1.5 rounded-md border border-slate-100 group-hover:border-blue-100 transition-colors"
+          >
+            <i
+              class="pi pi-file text-slate-500 group-hover:text-blue-500 transition-colors"
+            ></i>
+          </div>
+
+          <div class="flex flex-col">
+            <span
+              class="text-xs font-bold text-slate-700 max-w-[150px] truncate group-hover:text-blue-700 transition-colors"
+              dir="ltr"
+              [pTooltip]="file.link"
+              tooltipPosition="top"
+            >
+              {{ file.link }}
+            </span>
+            <span
+              class="text-[10px] text-slate-400 group-hover:text-blue-400 transition-colors"
+            >
+              اضغط للتحميل
+            </span>
+          </div>
+
+          <i
+            class="pi pi-download text-xs text-slate-400 mr-auto group-hover:text-blue-500 transition-colors"
+          ></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="hasHiddenDetails" class="border-t border-slate-100 pt-2 mt-2">
+    <button
+      (click)="toggleExpand()"
+      class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 text-slate-500 transition-colors group focus:outline-none"
+    >
+      <span
+        class="text-sm font-bold group-hover:text-blue-600 transition-colors"
+      >
+        {{ isExpanded ? "إخفاء التفاصيل التقنية" : "عرض التفاصيل التقنية" }}
+      </span>
+
+      <i
+        class="pi transition-transform duration-300 group-hover:text-blue-600"
+        [ngClass]="isExpanded ? 'pi-chevron-up rotate-180' : 'pi-chevron-down'"
+      >
+      </i>
+    </button>
+
+    <div
+      *ngIf="isExpanded"
+      class="mt-2 bg-slate-50 rounded-xl p-4 border border-slate-100 text-sm flex flex-col gap-5 animate-fade-in"
+    >
+      <div *ngIf="request.isDetailed">
+        <div class="flex items-center gap-2 mb-2 text-slate-700 font-bold">
+          <i class="pi pi-align-right text-blue-500"></i>
+          <span> الوصف التفصيلي </span>
+        </div>
+        <div
+          class="text-slate-600 whitespace-pre-wrap leading-relaxed pl-4 border-r-2 border-slate-200 mr-1 bg-white p-3 rounded-lg border border-slate-100"
+        >
+          {{ request.detailedDescription }}
+        </div>
+      </div>
+
+      <div
+        *ngIf="request.urgencyCause"
+        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div *ngIf="request.urgencyCause">
+          <div class="flex items-center gap-2 mb-2 text-slate-700 font-bold">
+            <i class="pi pi-exclamation-circle text-red-500"></i>
+            <span>سبب الاستعجال / الأهمية</span>
+          </div>
+          <p
+            class="text-slate-600 bg-red-50 p-3 rounded-lg border border-red-100 leading-relaxed"
+          >
+            {{ request.urgencyCause }}
+          </p>
+        </div>
+
+        <div
+          *ngIf="
+            request.usageDuration !== undefined &&
+            request.usageDuration !== null
+          "
+        >
+          <div class="flex items-center gap-2 mb-2 text-slate-700 font-bold">
+            <i class="pi pi-calendar text-orange-500"></i>
+            <span>مدة الاستخدام المتوقعة</span>
+          </div>
+          <div
+            class="flex items-center gap-2 bg-orange-50 p-3 rounded-lg border border-orange-100 text-orange-800 font-bold"
+          >
+            <span>{{ request.usageDuration }}</span>
+            <span>شهر</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="request.additionalNotes">
+        <div class="flex items-center gap-2 mb-2 text-slate-700 font-bold">
+          <i class="pi pi-info-circle text-purple-500"></i>
+          <span> ملاحظات إضافية </span>
+        </div>
+        <div
+          class="bg-slate-200 text-slate-700 p-3 rounded border border-slate-300 text-xs leading-relaxed"
+        >
+          {{ request.additionalNotes }}
+        </div>
+      </div>
+
+      <!-- <div *ngIf="request.expectedResult">
+        <div class="flex items-center gap-2 mb-2 text-slate-700 font-bold">
+          <i class="pi pi-check-circle text-green-500"></i>
+          <span>النتيجة المتوقعة</span>
+        </div>
+        <p
+          class="text-slate-600 bg-green-50 p-3 rounded-lg border border-green-100"
+        >
+          {{ request.expectedResult }}
+        </p>
+      </div> -->
+
+      <div
+        *ngIf="request.contributorEmail || request.contributorPhoneNumber"
+        class="border-t border-slate-200 pt-4 mt-2"
+      >
+        <div class="flex items-center gap-2 mb-3 text-slate-700 font-bold">
+          <i class="pi pi-id-card text-slate-500"></i>
+          <span>معلومات التواصل (للمتابعة)</span>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <div
+            *ngIf="request.contributorEmail"
+            class="flex items-center gap-2 bg-white px-3 py-2 rounded-full border border-slate-200 shadow-sm"
+          >
+            <i class="pi pi-envelope text-slate-400"></i>
+            <span class="text-slate-600 dir-ltr font-mono text-xs">{{
+              request.contributorEmail
+            }}</span>
+          </div>
+
+          <div
+            *ngIf="request.contributorPhoneNumber"
+            class="flex items-center gap-2 bg-white px-3 py-2 rounded-full border border-slate-200 shadow-sm"
+          >
+            <i class="pi pi-phone text-slate-400"></i>
+            <span class="text-slate-600 dir-ltr font-mono text-xs">{{
+              request.contributorPhoneNumber
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

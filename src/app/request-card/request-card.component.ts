@@ -9,6 +9,7 @@ import {
 // PrimeNG
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request-card',
@@ -28,6 +29,8 @@ export class RequestCardComponent {
   @Input() categoryColor: string = '#ddd';
 
   @Output() vote = new EventEmitter<RequestResponseDto>();
+
+  constructor(private router: Router) {}
 
   // Enums for template usage
   RequestType = RequestType;
@@ -106,6 +109,10 @@ export class RequestCardComponent {
     } else {
       return 'text-slate-700';
     }
+  }
+
+  navigateToRequest() {
+    this.router.navigate(['/request', this.request.id]);
   }
 
   onVoteClick() {

@@ -1,0 +1,379 @@
+<div
+  class="bg-white border border-slate-200 rounded-xl shadow-sm transition-all duration-500"
+  dir="rtl"
+>
+  <div
+    class="bg-slate-50 border-b border-slate-100 p-4 flex justify-between items-center rounded-t-xl"
+  >
+    <h3
+      class="font-bold flex items-center gap-2"
+      [ngClass]="formContext() === 'bug' ? 'text-red-700' : 'text-slate-700'"
+    >
+      <i
+        class="pi"
+        [ngClass]="
+          formContext() === 'bug'
+            ? 'pi-exclamation-triangle'
+            : isEditMode()
+            ? 'pi-pencil'
+            : 'pi-lightbulb'
+        "
+      >
+      </i>
+
+      <span *ngIf="formContext() === 'bug'">
+        {{ isEditMode() ? "تعديل بلاغ الخطأ" : "إبلاغ عن خطأ" }}
+        {{ isDetailedMode() ? "(تفصيلي)" : "" }}
+      </span>
+
+      <span *ngIf="formContext() === 'feature'">
+        {{ isEditMode() ? "تعديل المقترح" : "إضافة مقترح جديد" }}
+        {{ isDetailedMode() ? "(تفصيلي)" : "" }}
+      </span>
+    </h3>
+
+    @if (!isEditMode()){
+    <p-button
+      (onClick)="toggleDetailedMode()"
+      [label]="
+        isDetailedMode() ? 'العودة لنموذج بسيط' : 'هل تريد إضافة تفاصيل أكثر؟'
+      "
+      [icon]="isDetailedMode() ? 'pi pi-minus-circle' : 'pi pi-plus-circle'"
+      [rounded]="true"
+      severity="secondary"
+      size="small"
+      [outlined]="true"
+      styleClass="text-xs font-bold"
+    />
+    }
+  </div>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="p-6 flex flex-col gap-6"
+  >
+    <div class="flex flex-col gap-2">
+      <p-floatLabel>
+        <input
+          pInputText
+          id="title"
+          formControlName="title"
+          class="w-full"
+          maxlength="40"
+          [ngClass]="{
+            'ng-invalid ng-dirty': form.get('title')?.invalid && submitted()
+          }"
+        />
+        <label for="title">
+          {{
+            formContext() === "bug" ? "عنوان الخطأ (باختصار)" : "عنوان المقترح"
+          }}
+        </label>
+      </p-floatLabel>
+
+      <small
+        *ngIf="form.get('title')?.invalid && submitted()"
+        class="text-red-500"
+      >
+        العنوان مطلوب ولا يتجاوز 40 حرفاً.
+      </small>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <p-floatLabel>
+        <textarea
+          pTextarea
+          id="description"
+          formControlName="description"
+          [rows]="formContext() === 'bug' ? 4 : 3"
+          maxlength="300"
+          class="w-full resize-none"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              form.get('description')?.invalid && submitted()
+          }"
+        >
+        </textarea>
+        <label for="description">
+          {{ formContext() === "bug" ? "وصف المشكلة باختصار" : "نبذة مختصرة" }}
+        </label>
+      </p-floatLabel>
+
+      <small
+        *ngIf="form.get('description')?.invalid && submitted()"
+        class="text-red-500"
+      >
+        الوصف مطلوب ولا يتجاوز 300 حرف.
+      </small>
+    </div>
+
+    @if (isDetailedMode()) {
+    <div
+      class="flex flex-col gap-6 animate-fadein border-t border-slate-100 pt-6"
+    >
+      <div
+        class="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm mb-2 flex gap-2"
+      >
+        <i class="pi pi-info-circle mt-0.5"></i>
+        <p>
+          تساعدنا التفاصيل الدقيقة في فهم احتياجك بشكل أفضل وتنفيذه بأسرع وقت.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p-floatLabel>
+          <textarea
+            pTextarea
+            id="detailedDescription"
+            formControlName="detailedDescription"
+            rows="8"
+            maxlength="4000"
+            class="w-full"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                form.get('detailedDescription')?.invalid && submitted()
+            }"
+          >
+          </textarea>
+          <label for="detailedDescription">
+            {{
+              formContext() === "bug"
+                ? "خطوات تكرار الخطأ (Steps to Reproduce)"
+                : "الوصف التفصيلي الكامل"
+            }}
+          </label>
+        </p-floatLabel>
+
+        <small
+          *ngIf="form.get('detailedDescription')?.invalid && submitted()"
+          class="text-red-500"
+        >
+          هذا الحقل مطلوب في الوضع التفصيلي.
+        </small>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <p-floatLabel>
+            <p-inputNumber
+              inputId="usageDuration"
+              formControlName="usageDurationInMonths"
+              [showButtons]="true"
+              [min]="0"
+              suffix=" شهر"
+              styleClass="w-full"
+              inputStyleClass="w-full"
+            >
+            </p-inputNumber>
+            <label for="usageDuration">مدة الاستخدام / تكرار المشكلة</label>
+          </p-floatLabel>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <p-floatLabel>
+            <input
+              pInputText
+              id="urgencyCause"
+              formControlName="urgencyCause"
+              class="w-full"
+              maxlength="500"
+            />
+            <label for="urgencyCause">سبب الاستعجال / الأهمية</label>
+          </p-floatLabel>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <p-floatLabel>
+          <textarea
+            pTextarea
+            id="additionalNotes"
+            formControlName="additionalNotes"
+            rows="3"
+            maxlength="2000"
+            class="w-full"
+          >
+          </textarea>
+          <label for="additionalNotes">ملاحظات إضافية / معلومات النظام</label>
+        </p-floatLabel>
+      </div>
+
+      <h4
+        class="font-bold text-slate-700 text-sm mt-2 border-b border-slate-100 pb-2"
+      >
+        معلومات التواصل (للمتابعة التقنية)
+      </h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <p-floatLabel>
+            <input
+              pInputText
+              id="phone"
+              formControlName="contributerPhoneNumber"
+              class="w-full"
+            />
+            <label for="phone">رقم الهاتف</label>
+          </p-floatLabel>
+        </div>
+        <div class="flex flex-col gap-2">
+          <p-floatLabel>
+            <input
+              pInputText
+              id="email"
+              formControlName="contributerEmail"
+              class="w-full"
+            />
+            <label for="email">البريد الإلكتروني</label>
+          </p-floatLabel>
+          <small
+            *ngIf="form.get('contributerEmail')?.invalid && submitted()"
+            class="text-red-500"
+          >
+            بريد إلكتروني غير صحيح.
+          </small>
+        </div>
+      </div>
+    </div>
+    }
+
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100"
+    >
+      <div class="flex flex-col gap-2">
+        <p-autoComplete
+          formControlName="category"
+          [suggestions]="filteredCategories"
+          (completeMethod)="searchCategory($event)"
+          optionLabel="name"
+          [dropdown]="true"
+          [forceSelection]="true"
+          placeholder="اختر التصنيف/الفئة"
+          class="w-full"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          [ngClass]="{
+            'ng-invalid ng-dirty': form.get('category')?.invalid && submitted()
+          }"
+        >
+          <ng-template let-category #item>
+            <div
+              class="text-white text-center p-2 rounded-2xl text-xs font-bold"
+              [style.background-color]="getCategoryColor(category)"
+            >
+              {{ category.name }}
+            </div>
+          </ng-template>
+        </p-autoComplete>
+
+        <small
+          *ngIf="form.get('category')?.invalid && submitted()"
+          class="text-red-500"
+        >
+          التصنيف مطلوب.
+        </small>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-3">
+          <input
+            type="file"
+            id="file-upload"
+            multiple
+            class="hidden"
+            (change)="onFileChange($event)"
+            #fileInput
+          />
+
+          <p-button
+            label="إرفاق ملفات / صور"
+            icon="pi pi-paperclip"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="fileInput.click()"
+            class="w-full md:w-auto"
+          />
+
+          <span class="text-sm text-slate-400 hidden sm:inline"
+            >PNG, JPG, MP4 (Max 20MB)</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filesArray.length > 0" class="flex flex-wrap gap-2 mt-2">
+      <div
+        *ngFor="let file of filesArray; let i = index"
+        class="bg-blue-50 text-blue-700 pl-1 pr-3 py-1 rounded-md text-sm flex items-center gap-2 border border-blue-100"
+      >
+        <i class="pi pi-file"></i>
+        <span class="max-w-[150px] truncate">{{ file.name }}</span>
+        <p-button
+          icon="pi pi-times"
+          [rounded]="true"
+          [text]="true"
+          severity="danger"
+          size="small"
+          (onClick)="removeNewFile(i)"
+          styleClass="w-6 h-6"
+        />
+      </div>
+    </div>
+
+    <div
+      *ngIf="isEditMode() && existingFiles.length > 0"
+      class="flex flex-col gap-2 mt-2"
+    >
+      <span class="text-xs font-bold text-slate-500"
+        >الملفات المرفقة سابقاً:</span
+      >
+      <div class="flex flex-wrap gap-2">
+        <div
+          *ngFor="let file of existingFiles"
+          (click)="downloadFile(file.link)"
+          class="bg-slate-100 cursor-pointer text-slate-700 pl-1 pr-3 py-1 rounded-md text-sm flex items-center gap-2 border border-slate-200"
+        >
+          <i class="pi pi-paperclip"></i>
+          <a target="_blank" class="max-w-[150px] truncate hover:underline">{{
+            file.link
+          }}</a>
+          <p-button
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (onClick)="removeExistingFile(file)"
+            styleClass="w-6 h-6"
+            pTooltip="حذف الملف القديم"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-3 pt-4 mt-2 border-t border-slate-50">
+      <p-button
+        type="submit"
+        [label]="
+          isEditMode()
+            ? 'حفظ التعديلات'
+            : formContext() === 'bug'
+            ? 'إرسال البلاغ'
+            : 'إرسال المقترح'
+        "
+        [icon]="isEditMode() ? 'pi pi-check' : 'pi pi-send'"
+        [rounded]="true"
+        [loading]="loading()"
+      />
+
+      <p-button
+        label="إلغاء"
+        icon="pi pi-times"
+        severity="secondary"
+        [text]="true"
+        (onClick)="reset()"
+        [disabled]="loading()"
+      />
+    </div>
+  </form>
+</div>

@@ -1,0 +1,130 @@
+<div
+  class="card bg-white border border-slate-200 rounded-xl shadow-sm p-5 flex flex-col gap-4 z-50"
+  dir="rtl"
+>
+  <div class="flex items-center justify-between">
+    <h3 class="font-bold text-slate-800 text-lg m-0 flex items-center gap-2">
+      <i class="pi pi-users text-slate-400"></i>
+      المصوتون
+    </h3>
+    <span
+      class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm"
+    >
+      {{ totalVotesCount }}
+    </span>
+  </div>
+
+  <div *ngIf="loading" class="flex items-center gap-2">
+    <p-skeleton
+      shape="circle"
+      size="2.5rem"
+      *ngFor="let i of [1, 2, 3, 4, 5]"
+    ></p-skeleton>
+  </div>
+
+  <div
+    *ngIf="!loading && totalVotesCount === 0"
+    class="text-center py-4 bg-slate-50 rounded-lg border border-dashed border-slate-200"
+  >
+    <span class="text-slate-400 text-sm">كن أول من يصوت!</span>
+  </div>
+
+  <div *ngIf="!loading && totalVotesCount > 0" class="flex justify-start">
+    <p-avatarGroup styleClass="mb-1">
+      @for(voter of displayVoters; track voter.id){ @if (voter.pictureUrl !=
+      null && voter.pictureUrl != ""){
+      <p-avatar
+        [image]="getPictureUrl(voter.pictureUrl!)"
+        shape="circle"
+        size="large"
+        styleClass="
+         bg-indigo-100 text-indigo-700 font-bold
+        "
+        [pTooltip]="voter.name"
+        tooltipPosition="top"
+        class="cursor-pointer transition-transform hover:z-10 hover:scale-105"
+        (click)="navigateToProfile(voter.id)"
+      >
+      </p-avatar>
+      } @else {
+      <p-avatar
+        [label]="getInitials(voter.name)"
+        shape="circle"
+        size="large"
+        [pTooltip]="voter.name"
+        tooltipPosition="top"
+        class="cursor-pointer transition-transform hover:z-10 hover:scale-105"
+        (click)="navigateToProfile(voter.id)"
+      >
+      </p-avatar>
+      } }
+
+      <p-avatar
+        *ngIf="remainingCount > 0"
+        [label]="'+' + remainingCount"
+        shape="circle"
+        size="large"
+        styleClass="bg-slate-100 text-slate-600 font-bold border-2 border-white cursor-pointer hover:bg-slate-200 transition-colors"
+        pTooltip="عرض كل المصوتون"
+        tooltipPosition="top"
+        (click)="openVotersDialog()"
+      >
+      </p-avatar>
+    </p-avatarGroup>
+  </div>
+
+  <div
+    *ngIf="!loading && totalVotesCount > 0"
+    class="text-xs text-slate-400 mt-1"
+  >
+    هؤلاء المستخدمين مهتمين بهذا الطلب.
+  </div>
+</div>
+
+<p-dialog
+  header="قائمة المصوتون"
+  [(visible)]="isDialogVisible"
+  [modal]="true"
+  [style]="{ width: '400px', maxWidth: '90vw', zIndex: 2000 }"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  appendTo="body"
+  dir="rtl"
+>
+  <div
+    class="voters-list flex flex-col gap-1 max-h-[60vh] overflow-y-auto pr-1"
+  >
+    @for(voter of displayVoters; track voter.id){
+    <div
+      class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors group"
+      (click)="navigateToProfile(voter.id)"
+    >
+      @if (voter.pictureUrl != null && voter.pictureUrl != ""){
+      <p-avatar
+        [image]="voter.pictureUrl"
+        shape="circle"
+        size="large"
+        styleClass="bg-indigo-100 text-indigo-700 font-bold"
+      >
+      </p-avatar>
+      } @else {
+      <p-avatar shape="circle" [label]="getInitials(voter.name)" size="large">
+      </p-avatar>
+      }
+
+      <div class="flex flex-col">
+        <span
+          class="font-bold text-slate-800 text-sm group-hover:text-blue-600 transition-colors"
+        >
+          {{ voter.name }}
+        </span>
+      </div>
+
+      <i
+        class="pi pi-angle-left mr-auto text-slate-300 group-hover:text-blue-500"
+      ></i>
+    </div>
+    }
+  </div>
+</p-dialog>

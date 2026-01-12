@@ -91,8 +91,8 @@ export class RequestManagementComponent implements OnInit {
   // --- Status Management (Arabic) ---
   statusOptions = [
     { label: 'منشور', value: RequestStatus.Published },
-    { label: 'قيد الدراسة', value: RequestStatus.InConsideration },
-    { label: 'جاري التنفيذ', value: RequestStatus.InProgress },
+    { label: 'قيد النظر', value: RequestStatus.InConsideration },
+    { label: 'قيد العمل', value: RequestStatus.InProgress },
     { label: 'مكتمل', value: RequestStatus.Done },
     { label: 'مرفوض', value: RequestStatus.Rejected },
   ];
@@ -161,6 +161,7 @@ export class RequestManagementComponent implements OnInit {
     message: string;
     notify: boolean;
     isInternal: boolean;
+    newStatus: RequestStatus;
   }) {
     if (!this.pendingRequest || this.pendingNewStatus === null) return;
 

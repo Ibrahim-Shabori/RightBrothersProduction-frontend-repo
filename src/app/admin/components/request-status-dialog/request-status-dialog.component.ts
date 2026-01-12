@@ -5,6 +5,7 @@ import {
   Output,
   OnChanges,
   SimpleChanges,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +19,6 @@ import { TagModule } from 'primeng/tag';
 
 import {
   RequestManagementPageItemDto,
-  RequestPageItemDto,
   RequestStatus,
 } from '../../../shared/models/request.model';
 
@@ -37,31 +37,30 @@ import {
   templateUrl: './request-status-dialog.component.html',
   styleUrl: './request-status-dialog.component.css',
 })
-export class RequestStatusDialogComponent implements OnChanges {
+export class RequestStatusDialogComponent implements OnChanges, OnInit {
   @Input() visible: boolean = false;
-  @Input() request: RequestManagementPageItemDto | null = null;
   @Input() newStatus: RequestStatus | null = null;
   @Input() isInternal: boolean = false;
   @Input() notifyUsers: boolean = true;
   @Input() statusOptions: any[] = [];
   @Input() updateMessage: string = '';
+  @Input() nextStatus: boolean = false;
 
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() onConfirm = new EventEmitter<{
     message: string;
     notify: boolean;
     isInternal: boolean;
+    newStatus: RequestStatus;
   }>();
+
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['visible'] && this.visible) {
-      // Default Logic:
-      // If adding an 'internal note' via the row button, the parent component usually sets isInternal=true
-      // We just need to ensure the message defaults are correct.
-      this.updateMessage = this.getDefaultMessage(this.newStatus);
-
-      // If we are just opening it without specific overrides from parent, set defaults:
-      // You might handle this logic in the parent "handleRowAction", but safe defaults here help.
+      this.updateMessage = this.getDefaultMessage(
+        this.newStatus! + (this.nextStatus ? 1 : 0)
+      );
     }
   }
 
@@ -75,6 +74,7 @@ export class RequestStatusDialogComponent implements OnChanges {
       message: this.updateMessage,
       notify: this.notifyUsers,
       isInternal: this.isInternal,
+      newStatus: this.newStatus! + (this.nextStatus ? 1 : 0),
     });
     this.close(); // Close immediately on confirm
   }
@@ -99,9 +99,9 @@ export class RequestStatusDialogComponent implements OnChanges {
       case RequestStatus.Published:
         return 'secondary';
       case RequestStatus.InConsideration:
-        return 'warn';
-      case RequestStatus.InProgress:
         return 'info';
+      case RequestStatus.InProgress:
+        return 'warn';
       case RequestStatus.Done:
         return 'success';
       case RequestStatus.Rejected:

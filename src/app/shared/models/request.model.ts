@@ -103,3 +103,52 @@ export interface ReviewRequestDto {
   comment: string;
   isPublic: boolean;
 }
+
+export interface FileDto {
+  id: number;
+  link: string;
+}
+export interface RequestDetailsDto {
+  id: number;
+  title: string;
+  description: string | null;
+  type: RequestType;
+  status: RequestStatus;
+  isDetailed: boolean;
+  votesCount: number;
+  createdAt: Date;
+  usageDuration: number | null;
+  detailedDescription: string | null;
+  urgencyCause: string | null;
+  additionalNotes: string | null;
+  contributorPhoneNumber: string | null;
+  contributorEmail: string | null;
+  categoryName: string;
+  categoryColor: string;
+  createdByName: string;
+  createdByPictureUrl: string | null;
+  createdById: string;
+  files: FileDto[] | null;
+}
+
+export interface RequestLogDetailsDto {
+  comment: string | null;
+  newStatus: RequestStatus;
+  createdAt: Date;
+  isPublic: boolean;
+  loggerName: string;
+  loggerPictureUrl: string | null;
+}
+
+export interface UpdateRequestDto {
+  title: string;
+  description: string | null;
+  category: number | null;
+  usageDuration: number | null;
+  detailedDescription: string | null;
+  urgencyCause: string | null;
+  additionalNotes: string | null;
+  contributerPhoneNumber: string | null;
+  contributerEmail: string | null;
+  oldFilesToDelete: number[] | null;
+}

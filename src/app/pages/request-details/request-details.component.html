@@ -1,0 +1,112 @@
+<div
+  class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 font-ibmArabic min-h-screen"
+>
+  <p-toast position="bottom-left"></p-toast>
+  <p-confirmDialog [style]="{ width: '400px' }" dir="rtl"></p-confirmDialog>
+
+  <app-request-status-dialog
+    [visible]="isStatusDialogVisible"
+    (visibleChange)="isStatusDialogVisible = $event"
+    [statusOptions]="statusOptions"
+    [newStatus]="request?.status!"
+    [nextStatus]="isNewStatus()"
+    (onConfirm)="confirmStatusUpdate($event)"
+  >
+  </app-request-status-dialog>
+
+  <div
+    *ngIf="loading"
+    class="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse"
+  >
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+      <p-skeleton height="300px" styleClass="rounded-xl"></p-skeleton>
+      <p-skeleton height="400px" styleClass="rounded-xl"></p-skeleton>
+    </div>
+    <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+      <p-skeleton height="150px" styleClass="rounded-xl"></p-skeleton>
+      <p-skeleton height="200px" styleClass="rounded-xl"></p-skeleton>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!loading && request"
+    class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
+  >
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-8">
+      <app-request-info-card
+        [request]="request"
+        [isOwner]="isOwner"
+        [isAdmin]="isAdmin"
+        [hasVoted]="hasVoted"
+        (onEdit)="handleEdit($event)"
+        (onDelete)="handleDelete($event)"
+        (onVote)="handleVote(request.id)"
+        (onDownloadFile)="downloadFile($event)"
+      >
+      </app-request-info-card>
+
+      <app-activity-timeline [logs]="requestLogs"> </app-activity-timeline>
+    </div>
+
+    <div class="col-span-12 lg:col-span-4 flex flex-col gap-6 sticky top-28">
+      <div
+        *ngIf="isAdmin"
+        class="card bg-white border border-slate-200 rounded-xl shadow-sm p-5 border-l-4 border-l-blue-500"
+      >
+        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <i class="pi pi-cog text-slate-500"></i>
+          إجراءات إدارية
+        </h3>
+
+        <p class="text-xs text-slate-500 mb-4">
+          بصفتك مشرفاً، يمكنك تغيير حالة هذا الطلب وتوثيق السبب.
+        </p>
+
+        <button
+          pButton
+          label="تحديث الحالة"
+          icon="pi pi-sync"
+          class="p-button-outlined w-full justify-center"
+          (click)="openStatusDialog(true)"
+        ></button>
+        <button
+          pButton
+          label="إضافة تحديث"
+          icon="pi pi-plus"
+          class="p-button-outlined w-full justify-center"
+          (click)="openStatusDialog()"
+        ></button>
+      </div>
+
+      <app-voters-card
+        [voters]="requestVoters"
+        [totalVotesCount]="request.votesCount"
+        [loading]="loading"
+      >
+      </app-voters-card>
+
+      <div
+        *ngIf="!isAdmin"
+        class="card bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 text-white text-center"
+      >
+        <div
+          class="mb-3 bg-white/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto backdrop-blur-sm"
+        >
+          <i class="pi pi-arrow-up text-xl"></i>
+        </div>
+        <h3 class="font-bold text-lg mb-1">هل تواجه نفس المشكلة؟</h3>
+        <p class="text-indigo-100 text-sm mb-4">
+          تصويتك يساعدنا في تحديد الأولويات.
+        </p>
+
+        <button
+          pButton
+          [label]="hasVoted ? 'تم التصويت' : 'صوّت لهذا الطلب'"
+          [icon]="hasVoted ? 'pi pi-check' : 'pi pi-thumbs-up'"
+          class="p-button-white text-indigo-600 w-full font-bold shadow-md"
+          [disabled]="hasVoted"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

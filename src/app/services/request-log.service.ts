@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   RequestLogDto,
   CreateRequestLogDto,
+  RequestLogDetailsDto,
 } from '../shared/models/request.model';
 import { Observable } from 'rxjs';
 @Injectable({
@@ -20,5 +21,13 @@ export class RequestLogService {
 
   getRequestLogsByRequestId(requestId: number): Observable<RequestLogDto[]> {
     return this.http.get<RequestLogDto[]>(`${this.apiUrl}/${requestId}`);
+  }
+
+  getRequestLogsDetailedByRequestId(
+    requestId: number
+  ): Observable<RequestLogDetailsDto[]> {
+    return this.http.get<RequestLogDetailsDto[]>(
+      `${this.apiUrl}/request/${requestId}`
+    );
   }
 }

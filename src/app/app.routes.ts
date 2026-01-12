@@ -14,6 +14,7 @@ import { ProfileContributionsComponent } from './profile/profile-contributions/p
 import { ProfileWatchlistComponent } from './profile/profile-watchlist/profile-watchlist.component';
 import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
 import { GuestGuard } from './guards/guest.guard';
+import { RequestDetailsComponent } from './pages/request-details/request-details.component';
 
 export const routes: Routes = [
   {
@@ -38,12 +39,22 @@ export const routes: Routes = [
           {
             path: 'features',
             component: FeaturesComponent,
-            data: { type: 'features' },
+            data: { type: 'feature' },
+          },
+          {
+            path: 'features/:id',
+            component: FeaturesComponent,
+            data: { context: 'feature' },
           },
           {
             path: 'bugs',
             component: BugsComponent,
-            data: { type: 'bugs' },
+            data: { context: 'bug' },
+          },
+          {
+            path: 'bugs/:id',
+            component: BugsComponent,
+            data: { context: 'bug' },
           },
         ],
       },
@@ -65,6 +76,10 @@ export const routes: Routes = [
           { path: '', redirectTo: 'contributions', pathMatch: 'full' },
           { path: 'contributions', component: ProfileContributionsComponent },
         ],
+      },
+      {
+        path: 'request/:id',
+        component: RequestDetailsComponent,
       },
     ],
   },

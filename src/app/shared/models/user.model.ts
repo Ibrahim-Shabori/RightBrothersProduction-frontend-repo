@@ -26,3 +26,9 @@ export interface UserManagementPageItemDto {
   performanceScore: number;
   lastActivity: Date;
 }
+
+export interface voterDto {
+  id: string;
+  name: string;
+  pictureUrl: string | null;
+}

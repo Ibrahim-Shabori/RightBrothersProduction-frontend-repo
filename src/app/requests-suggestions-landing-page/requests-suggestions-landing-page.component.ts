@@ -20,16 +20,16 @@ import { CardModule } from 'primeng/card';
   styleUrl: './requests-suggestions-landing-page.component.css',
 })
 export class RequestsSuggestionsLandingPageComponent {
-  type$!: Observable<'features' | 'bugs' | null>;
+  context$!: Observable<'feature' | 'bug' | null>;
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    this.type$ = this.router.events.pipe(
+    this.context$ = this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
       startWith(null),
       map(() => this.findDeepestActivatedRoute(this.route)),
-      map((r) => r?.snapshot?.data?.['type'] ?? null),
+      map((r) => r?.snapshot?.data?.['context'] ?? null),
       distinctUntilChanged()
     );
   }

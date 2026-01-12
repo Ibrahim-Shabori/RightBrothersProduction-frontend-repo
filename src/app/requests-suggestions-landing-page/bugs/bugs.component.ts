@@ -12,15 +12,9 @@ import { debounceTime } from 'rxjs';
 
 // PrimeNG Imports
 import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { TagModule } from 'primeng/tag';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RequestService } from '../../services/request.service';
@@ -28,15 +22,14 @@ import { MessageService } from 'primeng/api';
 import { CategoryService } from '../../services/category.service';
 import { VoteService } from '../../services/vote.service';
 import { ProfileService } from '../../services/profile.service';
-// Validators
-import { fileValidators } from '../../shared/validators/file.validators';
-import { noWhitespaceValidator } from '../../shared/validators/common.validator';
+
 import {
   Category,
   RequestResponseDto,
   RequestType,
 } from '../../shared/models/request.model';
 import { RequestCardComponent } from '../../request-card/request-card.component';
+import { RequestFormComponent } from '../../components/requests-suggestions/request-form/request-form.component';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -44,21 +37,15 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     FormsModule,
-    InputTextModule,
-    TextareaModule,
-    FloatLabelModule,
-    AutoCompleteModule,
-    ButtonModule,
     IconFieldModule,
     InputIconModule,
     SelectButtonModule,
-    TagModule,
-    TooltipModule,
     ToastModule,
     RequestCardComponent,
+    RequestFormComponent,
     InputNumberModule,
+    InputTextModule,
   ],
   templateUrl: './bugs.component.html',
   styleUrl: './bugs.component.css',
@@ -72,23 +59,7 @@ export class BugsComponent implements OnInit {
     private voteService: VoteService,
     private profileService: ProfileService,
     private authService: AuthService
-  ) {
-    effect(() => {
-      // This runs automatically whenever userEmail() or userPhoneNumber() changes
-      const email = this.userEmail();
-      const phone = this.userPhoneNumber();
-
-      // Only patch if we actually have data (prevents overwriting user edits with empty strings)
-      if (email) {
-        this.form.patchValue({ contributerEmail: email });
-      }
-
-      if (phone) {
-        this.form.patchValue({ contributerPhoneNumber: phone });
-      }
-      return;
-    });
-  }
+  ) {}
 
   submitted = signal<boolean>(false);
   isDetailedMode = signal<boolean>(false);
@@ -105,60 +76,8 @@ export class BugsComponent implements OnInit {
   filteredCategories: Category[] = [];
   requests = signal<RequestResponseDto[]>([]);
   filesArray: File[] = [];
-  userEmail = signal<string>('');
-  userPhoneNumber = signal<string>('');
-
-  form = new FormGroup({
-    // 1. Base Request Fields (Simple)
-    title: new FormControl('', [Validators.required, Validators.maxLength(40)]),
-    description: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(300),
-    ]),
-    category: new FormControl<any>(null, [Validators.required]),
-    files: new FormControl(null),
-
-    // 2. Detailed Request Fields (Initially Disabled)
-    detailedDescription: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(4000),
-    ]),
-    usageDurationInMonths: new FormControl<number | null>(null),
-    urgencyCause: new FormControl('', [Validators.maxLength(500)]),
-    additionalNotes: new FormControl('', [Validators.maxLength(2000)]),
-    contributerPhoneNumber: new FormControl('', [
-      Validators.minLength(11),
-      Validators.maxLength(15),
-      Validators.pattern(/^[0-9+]+$/),
-    ]),
-    contributerEmail: new FormControl('', [
-      Validators.email,
-      Validators.maxLength(255),
-    ]),
-  });
 
   ngOnInit() {
-    this.authService.authStatus$.subscribe((val) => this.authStatus.set(val));
-    if (this.authStatus() == true) {
-      this.profileService.getUserContactInfo().subscribe({
-        next: (info) => {
-          this.userEmail.set(info.email);
-          this.userPhoneNumber.set(info.phoneNumber || '');
-        },
-      });
-    }
-
-    this.updateControlsState();
-    // Smart Search: Filters the list while user types the bug title
-    this.form.valueChanges.pipe(debounceTime(300)).subscribe((val) => {
-      const text = (val.title || '') + ' ' + (val.description || '');
-      if (text.length > 2) {
-        this.searchQuery.set(val.title || '');
-      } else if (text.length === 0) {
-        this.searchQuery.set('');
-      }
-    });
-
     this.categoryService.getBugCategories().subscribe({
       next: (data) => {
         this.categories = data;
@@ -166,34 +85,16 @@ export class BugsComponent implements OnInit {
       error: (err) => {},
     });
 
+    this.loadRequests();
+  }
+
+  loadRequests() {
     this.requestService.getBugRequests().subscribe({
       next: (data) => {
         this.requests.set(data);
       },
       error: (err) => console.error(err),
     });
-  }
-
-  toggleDetailedMode() {
-    this.isDetailedMode.update((v) => !v);
-    this.updateControlsState();
-  }
-
-  private updateControlsState() {
-    const detailedFields = [
-      'detailedDescription',
-      'usageDurationInMonths',
-      'urgencyCause',
-      'additionalNotes',
-      'contributerPhoneNumber',
-      'contributerEmail',
-    ];
-
-    if (this.isDetailedMode()) {
-      detailedFields.forEach((f) => this.form.get(f)?.enable());
-    } else {
-      detailedFields.forEach((f) => this.form.get(f)?.disable());
-    }
   }
 
   searchCategory(event: any) {
@@ -212,117 +113,8 @@ export class BugsComponent implements OnInit {
     return category.color;
   }
 
-  onFileChange(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
-      // Append new files to existing array
-      this.filesArray = [
-        ...this.filesArray,
-        ...Array.from(event.target.files as FileList),
-      ];
-    }
-  }
-
-  removeFile(index: number) {
-    this.filesArray.splice(index, 1);
-  }
-
-  onSubmit() {
-    this.submitted.set(true);
-
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.messageService.add({
-        severity: 'error',
-        summary: 'خطأ',
-        detail: 'يرجى تعبئة الحقول المطلوبة',
-      });
-      return;
-    }
-
-    const formValue = this.form.getRawValue();
-
-    // 1. Prepare Base Data (Common for both)
-    const baseData = {
-      title: formValue.title,
-      description: formValue.description,
-      category: formValue.category ? formValue.category : 0,
-      type: this.isDetailedMode() ? RequestType.DetailedBug : RequestType.Bug,
-    };
-
-    if (this.isDetailedMode()) {
-      // --- Detailed Mode ---
-      const detailedData = {
-        ...baseData,
-        // Add detailed specific fields
-        detailedDescription: formValue.detailedDescription,
-        usageDurationInMonths: formValue.usageDurationInMonths,
-        urgencyCause: formValue.urgencyCause,
-        additionalNotes: formValue.additionalNotes,
-        contributerPhoneNumber: formValue.contributerPhoneNumber,
-        contributerEmail: formValue.contributerEmail,
-      };
-
-      // Call the specific Detailed method
-      this.requestService
-        .createDetailedRequest(detailedData, this.filesArray)
-        .subscribe({
-          next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'تم الإرسال',
-              detail: 'تم استلام مقترحك التفصيلي بنجاح',
-            });
-            this.reset();
-          },
-          error: (err) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'خطأ',
-              detail: 'حدث خطأ أثناء إرسال الطلب',
-            });
-          },
-        });
-    } else {
-      // --- Simple Mode ---
-      // Call the existing simple method
-      this.requestService.createRequest(baseData, this.filesArray).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'تم الإرسال',
-            detail: 'تم استلام مقترحك بنجاح',
-          });
-          this.reset();
-        },
-        error: (err) => {
-          console.error(err);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'خطأ',
-            detail: 'حدث خطأ أثناء إرسال المقترح',
-          });
-        },
-      });
-    }
-    if (this.userEmail())
-      this.form.patchValue({ contributerEmail: this.userEmail() });
-    if (this.userPhoneNumber())
-      this.form.patchValue({ contributerPhoneNumber: this.userPhoneNumber() });
-  }
-
-  reset() {
-    this.form.reset({ category: null });
-    this.filesArray = [];
-    this.submitted.set(false);
-
-    if (this.userEmail())
-      this.form.patchValue({ contributerEmail: this.userEmail() });
-    if (this.userPhoneNumber())
-      this.form.patchValue({ contributerPhoneNumber: this.userPhoneNumber() });
-
-    if (this.isDetailedMode()) {
-      this.toggleDetailedMode();
-    }
+  onRequestCreated() {
+    this.loadRequests(); // Refresh the list to show the new item
   }
 
   displayedRequests = computed(() => {

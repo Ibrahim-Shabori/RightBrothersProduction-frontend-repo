@@ -4,6 +4,7 @@
     'hover:shadow-md hover:border-slate-300 cursor-pointer': clickable,
     'opacity-75': request.status === RequestStatus.Done
   }"
+  (click)="navigateToRequest()"
 >
   @if (request.isDetailed) {
   <div class="absolute top-0 right-0 z-10">

@@ -12,6 +12,7 @@ import {
   ReviewRequestDto,
   RequestPageItemDto,
   RequestManagementPageItemDto,
+  RequestDetailsDto,
 } from '../shared/models/request.model';
 import {
   QueryPeriod,
@@ -96,6 +97,64 @@ export class RequestService {
 
     // Change URL to your specific detailed endpoint
     return this.http.post(`${this.apiUrl}/detailed`, formData);
+  }
+
+  updateRequest(
+    id: number,
+    data: any,
+    files: File[],
+    oldFilesToDelete: number[]
+  ): Observable<any> {
+    const formData = new FormData();
+
+    // 1. Append Simple Fields
+    formData.append('Title', data.title);
+    formData.append('Description', data.description);
+    formData.append('CategoryId', data.category);
+
+    // 2. Append Files
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append('Attachments', file, file.name);
+      });
+    }
+
+    // 3. Old Files To delete
+    if (oldFilesToDelete && oldFilesToDelete.length > 0) {
+      oldFilesToDelete.forEach((fileId) => {
+        formData.append('OldFilesToDelete', fileId.toString());
+      });
+    }
+    if (data.oldFilesToDelete) {
+      formData.append('OldFilesToDelete', data.oldFilesToDelete);
+    }
+
+    // 4. If Detailed, append detailed fields
+    if (data.detailedDescription) {
+      formData.append('DetailedDescription', data.detailedDescription);
+    }
+    if (data.usageDurationInMonths) {
+      formData.append(
+        'UsageDurationInMonths',
+        data.usageDurationInMonths || '0'
+      );
+    }
+    if (data.urgencyCause) {
+      formData.append('UrgencyCause', data.urgencyCause);
+    }
+    if (data.additionalNotes) {
+      formData.append('AdditionalNotes', data.additionalNotes);
+    }
+    if (data.contributerPhoneNumber) {
+      formData.append('ContributerPhoneNumber', data.contributerPhoneNumber);
+    }
+    if (data.contributerEmail) {
+      formData.append('ContributerEmail', data.contributerEmail);
+    }
+    // 5. Post
+    // Angular automatically sets Content-Type to multipart/form-data
+    console.log(formData);
+    return this.http.put(`${this.apiUrl}/${id}`, formData);
   }
 
   getRequests(): Observable<RequestResponseDto[]> {
@@ -230,6 +289,10 @@ export class RequestService {
 
   getRequestsByUserId(userId: string): Observable<RequestResponseDto[]> {
     return this.http.get<RequestResponseDto[]>(`${this.apiUrl}/user/${userId}`);
+  }
+
+  getRequestDetails(id: number): Observable<RequestDetailsDto> {
+    return this.http.get<RequestDetailsDto>(`${this.apiUrl}/request/${id}`);
   }
 
   getVotedRequests(): Observable<RequestResponseDto[]> {

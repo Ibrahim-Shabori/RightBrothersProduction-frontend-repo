@@ -75,6 +75,47 @@ export class AuthService {
     }
   }
 
+  getCurrentUserName(): string | null {
+    const token = localStorage.getItem('jwt');
+    if (!token) return null;
+    try {
+      const decoded: any = jwtDecode(token);
+      console.log('full name: ', decoded['fullName']);
+      return decoded['fullName'] || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  getCurrentUserProfilePictureUrl(): string | null {
+    const token = localStorage.getItem('jwt');
+    if (!token) return null;
+    try {
+      const decoded: any = jwtDecode(token);
+      const url = decoded['profilePictureUrl'];
+      if (url != undefined) return url;
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  getProfilePictureUrl(
+    fileName: string | null | undefined
+  ): string | undefined {
+    if (!fileName) {
+      return undefined;
+    }
+
+    // Check if it's already a full URL (e.g. from Google Auth)
+    if (fileName.startsWith('http')) {
+      return fileName;
+    }
+
+    // Append your backend static files path (wwwroot)
+    return `${environment.baseUrl}/uploads/profiles/${fileName}`;
+  }
+
   // --- 4. Token Validity Check ---
   private isTokenValid(): boolean {
     const token = localStorage.getItem('jwt');

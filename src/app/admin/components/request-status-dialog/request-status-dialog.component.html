@@ -18,8 +18,8 @@
           >أنت تقوم بتغيير الحالة إلى:</span
         >
         <p-tag
-          [value]="getEnumLabel(newStatus)"
-          [severity]="getSeverity(newStatus)"
+          [value]="getEnumLabel(newStatus! + (nextStatus ? 1 : 0))"
+          [severity]="getSeverity(newStatus! + (nextStatus ? 1 : 0))"
           class="text-base"
         ></p-tag>
       </div>
